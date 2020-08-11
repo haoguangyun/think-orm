@@ -19,9 +19,22 @@
 
 ## 安装
 ~~~
-composer require topthink/think-orm
+composer require haoguangyun/think-orm
 ~~~
 
 ## 文档
 
-详细参考 [ThinkORM开发指南](https://www.kancloud.cn/manual/think-orm/content)
+### 例子
+```php
+// 引用类
+use think\pool\{DbPool, DbPoolConfig};
+// 初始化连接池
+DbPool::setPoolConfig((new DbPoolConfig())->setMinObjectNum(2)->setMaxObjectNum(5));
+// 写入数据库连接配置
+// 配置文件参考下方think-orm文档
+// 为避免反复写入配置, 可以将DbManager全局单例,
+$db = new DbManager();
+$db->setConfig($config);//单例后只需要执行一次就够了
+```
+
+具体语法详细参考 [ThinkORM开发指南](https://www.kancloud.cn/manual/think-orm/content)
