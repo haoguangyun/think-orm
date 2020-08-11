@@ -1,15 +1,17 @@
 {
-    "name": "topthink/think-orm",
-    "description": "think orm",
+    "name": "haoguangyun/think-orm",
+    "description": "swoole coroutine think orm",
     "keywords": [
+        "swoole",
+        "coroutine",
         "orm",
         "database"
     ],      
     "license": "Apache-2.0",
     "authors": [
         {
-            "name": "liu21st",
-            "email": "liu21st@gmail.com"
+            "name": "haoguangyun",
+            "email": "admin@haoguangyun.com"
         }
     ],
     "require": {
