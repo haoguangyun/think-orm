@@ -19,7 +19,7 @@
 
 ## 安装
 ~~~
-composer require haoguangyun/think-orm
+composer require rayswoole/think-orm
 ~~~
 
 ## 文档
