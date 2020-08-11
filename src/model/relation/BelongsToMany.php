@@ -440,22 +440,19 @@ class BelongsToMany extends Relation
     protected function belongsToManyQuery(string $foreignKey, string $localKey, array $condition = []): Query
     {
         // 关联查询封装
-        if (empty($this->baseQuery)) {
-            $tableName = $this->query->getTable();
-            $table     = $this->pivot->db()->getTable();
-            $fields    = $this->getQueryFields($tableName);
+        $tableName = $this->query->getTable();
+        $table     = $this->pivot->db()->getTable();
+        $fields    = $this->getQueryFields($tableName);
 
-            if ($this->withLimit) {
-                $this->query->limit($this->withLimit);
-            }
-
-            $this->query
-                ->field($fields)
-                ->tableField(true, $table, 'pivot', 'pivot__')
-                ->join([$table => 'pivot'], 'pivot.' . $foreignKey . '=' . $tableName . '.' . $this->query->getPk())
-                ->where($condition);
-
+        if ($this->withLimit) {
+            $this->query->limit($this->withLimit);
         }
+
+        $this->query
+            ->field($fields)
+            ->tableField(true, $table, 'pivot', 'pivot__')
+            ->join([$table => 'pivot'], 'pivot.' . $foreignKey . '=' . $tableName . '.' . $this->query->getPk())
+            ->where($condition);
 
         return $this->query;
     }
@@ -669,11 +666,7 @@ class BelongsToMany extends Relation
             $localKey   = $this->localKey;
 
             // 关联查询
-            if (null === $this->parent->getKey()) {
-                $condition = ['pivot.' . $localKey, 'exp', new Raw('=' . $this->parent->getTable() . '.' . $this->parent->getPk())];
-            } else {
-                $condition = ['pivot.' . $localKey, '=', $this->parent->getKey()];
-            }
+            $condition = ['pivot.' . $localKey, '=', $this->parent->getKey()];
 
             $this->belongsToManyQuery($foreignKey, $localKey, [$condition]);
 

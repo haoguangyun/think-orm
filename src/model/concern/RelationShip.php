@@ -13,6 +13,7 @@ declare (strict_types = 1);
 namespace think\model\concern;
 
 use Closure;
+use Swoole\Coroutine;
 use think\Collection;
 use think\db\BaseQuery as Query;
 use think\db\exception\DbException as Exception;
@@ -720,7 +721,10 @@ trait RelationShip
     {
         $relation = Str::camel($attr);
 
-        if ((method_exists($this, $relation) && !method_exists('think\Model', $relation)) || isset(static::$macro[static::class][$relation])) {
+        if (
+            (method_exists($this, $relation) && !method_exists('think\Model', $relation)) ||
+            (isset(Coroutine::getContext()['macro']) && isset(Coroutine::getContext()['macro'][static::class][$relation]))
+        ) {
             return $relation;
         }
 

@@ -12,6 +12,7 @@ declare (strict_types = 1);
 
 namespace think\model\concern;
 
+use Swoole\Coroutine;
 use think\db\exception\ModelEventException;
 use think\helper\Str;
 
@@ -41,7 +42,7 @@ trait ModelEvent
      */
     public static function setEvent($event)
     {
-        self::$event = $event;
+        Coroutine::getContext()['event'] = $event;
     }
 
     /**
@@ -73,8 +74,9 @@ trait ModelEvent
         try {
             if (method_exists(static::class, $call)) {
                 $result = call_user_func([static::class, $call], $this);
-            } elseif (is_object(self::$event) && method_exists(self::$event, 'trigger')) {
-                $result = self::$event->trigger(static::class . '.' . $event, $this);
+            } elseif (isset(Coroutine::getContext()['event']) && is_object(Coroutine::getContext()['event'])
+                && method_exists(Coroutine::getContext()['event'], 'trigger')) {
+                $result = Coroutine::getContext()['event']->trigger(static::class . '.' . $event, $this);
                 $result = empty($result) ? true : end($result);
             } else {
                 $result = true;

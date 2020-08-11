@@ -18,6 +18,7 @@ use PDOStatement;
 use think\db\exception\BindParamException;
 use think\db\exception\DbException;
 use think\db\exception\PDOException;
+use think\pool\DbPool;
 
 /**
  * 数据库连接基础类
@@ -526,7 +527,9 @@ abstract class PDOConnection extends Connection
 
             $startTime = microtime(true);
 
-            $this->links[$linkNum] = $this->createPdo($config['dsn'], $config['username'], $config['password'], $params);
+            //$this->links[$linkNum] = $this->createPdo($config['dsn'], $config['username'], $config['password'], $params);
+            $config['params'] = $params;
+            $this->links[$linkNum] = DbPool::getInstance($linkNum)->defer($config);
 
             // SQL监控
             if (!empty($config['trigger_sql'])) {
@@ -682,7 +685,7 @@ abstract class PDOConnection extends Connection
         if (!isset($master)) {
             $master = $query->getOptions('master') ? true : false;
         }
-
+        //是否为存储过程查询
         $procedure = $query->getOptions('procedure') ? true : in_array(strtolower(substr(trim($sql), 0, 4)), ['call', 'exec']);
 
         $this->getPDOStatement($sql, $bind, $master, $procedure);
@@ -728,13 +731,16 @@ abstract class PDOConnection extends Connection
      */
     public function getPDOStatement(string $sql, array $bind = [], bool $master = false, bool $procedure = false): PDOStatement
     {
-        try {
-            $this->initConnect($this->readMaster ?: $master);
-            // 记录SQL语句
-            $this->queryStr = $sql;
-            $this->bind     = $bind;
+        $this->initConnect($this->readMaster ?: $master);
 
-            $this->db->updateQueryTimes();
+        // 记录SQL语句
+        $this->queryStr = $sql;
+
+        $this->bind = $bind;
+
+        $this->db->updateQueryTimes();
+
+        try {
             $this->queryStartTime = microtime(true);
 
             // 预处理
@@ -1391,11 +1397,11 @@ abstract class PDOConnection extends Connection
      */
     public function startTrans(): void
     {
+        $this->initConnect(true);
+
+        ++$this->transTimes;
+
         try {
-            $this->initConnect(true);
-
-            ++$this->transTimes;
-
             if (1 == $this->transTimes) {
                 $this->linkID->beginTransaction();
             } elseif ($this->transTimes > 1 && $this->supportSavepoint()) {
@@ -1409,9 +1415,8 @@ abstract class PDOConnection extends Connection
                 --$this->transTimes;
                 ++$this->reConnectTimes;
                 $this->close()->startTrans();
-            } else {
-                throw $e;
             }
+            throw $e;
         }
     }
 

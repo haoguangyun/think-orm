@@ -19,6 +19,7 @@ use Countable;
 use DomainException;
 use IteratorAggregate;
 use JsonSerializable;
+use Swoole\Coroutine;
 use think\paginator\driver\Bootstrap;
 use Traversable;
 
@@ -136,8 +137,8 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
      */
     public static function make($items, int $listRows, int $currentPage = 1, int $total = null, bool $simple = false, array $options = [])
     {
-        if (isset(static::$maker)) {
-            return call_user_func(static::$maker, $items, $listRows, $currentPage, $total, $simple, $options);
+        if (isset(Coroutine::getContext()['PaginatorMaker'])) {
+            return call_user_func(Coroutine::getContext()['PaginatorMaker'], $items, $listRows, $currentPage, $total, $simple, $options);
         }
 
         return new Bootstrap($items, $listRows, $currentPage, $total, $simple, $options);
@@ -145,7 +146,7 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
 
     public static function maker(Closure $resolver)
     {
-        static::$maker = $resolver;
+        Coroutine::getContext()['PaginatorMaker'] = $resolver;
     }
 
     protected function setCurrentPage(int $currentPage): int
@@ -199,8 +200,8 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
      */
     public static function getCurrentPage(string $varPage = 'page', int $default = 1): int
     {
-        if (isset(static::$currentPageResolver)) {
-            return call_user_func(static::$currentPageResolver, $varPage);
+        if (isset(Coroutine::getContext()['currentPageResolver'])) {
+            return call_user_func(Coroutine::getContext()['currentPageResolver'], $varPage);
         }
 
         return $default;
@@ -212,7 +213,7 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
      */
     public static function currentPageResolver(Closure $resolver)
     {
-        static::$currentPageResolver = $resolver;
+        Coroutine::getContext()['currentPageResolver'] = $resolver;
     }
 
     /**
@@ -223,8 +224,8 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
      */
     public static function getCurrentPath($default = '/'): string
     {
-        if (isset(static::$currentPathResolver)) {
-            return call_user_func(static::$currentPathResolver);
+        if (isset(Coroutine::getContext()['currentPathResolver'])) {
+            return call_user_func(Coroutine::getContext()['currentPathResolver']);
         }
 
         return $default;
@@ -236,7 +237,7 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
      */
     public static function currentPathResolver(Closure $resolver)
     {
-        static::$currentPathResolver = $resolver;
+        Coroutine::getContext()['currentPathResolver'] = $resolver;
     }
 
     /**

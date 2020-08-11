@@ -15,6 +15,7 @@ namespace think;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
+use Swoole\Coroutine;
 use think\db\BaseQuery;
 use think\db\ConnectionInterface;
 use think\db\Query;
@@ -249,11 +250,12 @@ class DbManager
             $name = $this->getConfig('default', 'mysql');
         }
 
-        if ($force || !isset($this->instance[$name])) {
-            $this->instance[$name] = $this->createConnection($name);
+        $instance = 'DbManager_'.$name;
+        if ($force || !isset(Coroutine::getContext()[$instance])) {
+            Coroutine::getContext()[$instance] = $this->createConnection($name);
         }
 
-        return $this->instance[$name];
+        return Coroutine::getContext()[$instance];
     }
 
     /**
