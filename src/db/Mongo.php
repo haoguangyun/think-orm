@@ -7,7 +7,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
-namespace think\db;
+namespace rayswoole\db;
 
 use MongoDB\Driver\Command;
 use MongoDB\Driver\Cursor;
@@ -17,8 +17,8 @@ use MongoDB\Driver\Exception\InvalidArgumentException;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\Driver\WriteConcern;
-use think\db\exception\DbException as Exception;
-use think\Paginator;
+use rayswoole\db\exception\DbException as Exception;
+use rayswoole\Paginator;
 
 class Mongo extends BaseQuery
 {

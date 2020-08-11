@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\db\concern;
+namespace rayswoole\db\concern;
 
 /**
  * 数据字段信息

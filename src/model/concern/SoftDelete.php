@@ -10,10 +10,10 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\model\concern;
+namespace rayswoole\model\concern;
 
-use think\db\BaseQuery as Query;
-use think\Model;
+use rayswoole\db\BaseQuery as Query;
+use rayswoole\Model;
 
 /**
  * 数据软删除

@@ -10,12 +10,12 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\db\concern;
+namespace rayswoole\db\concern;
 
 use Closure;
 use think\helper\Str;
-use think\Model;
-use think\model\Collection as ModelCollection;
+use rayswoole\Model;
+use rayswoole\model\Collection as ModelCollection;
 
 /**
  * 模型及关联查询

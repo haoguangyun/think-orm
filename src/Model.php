@@ -10,15 +10,15 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think;
+namespace rayswoole;
 
 use ArrayAccess;
 use Closure;
 use JsonSerializable;
 use Swoole\Coroutine;
-use think\contract\Arrayable;
-use think\contract\Jsonable;
-use think\db\BaseQuery as Query;
+use rayswoole\contract\Arrayable;
+use rayswoole\contract\Jsonable;
+use rayswoole\db\BaseQuery as Query;
 
 /**
  * Class Model

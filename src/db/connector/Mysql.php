@@ -10,10 +10,10 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\db\connector;
+namespace rayswoole\db\connector;
 
 use PDO;
-use think\db\PDOConnection;
+use rayswoole\db\PDOConnection;
 
 /**
  * mysql数据库驱动

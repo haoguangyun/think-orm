@@ -7,7 +7,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
-namespace think\db\builder;
+namespace rayswoole\db\builder;
 
 use MongoDB\BSON\Javascript;
 use MongoDB\BSON\ObjectID;
@@ -16,9 +16,9 @@ use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\Command;
 use MongoDB\Driver\Exception\InvalidArgumentException;
 use MongoDB\Driver\Query as MongoQuery;
-use think\db\connector\Mongo as Connection;
-use think\db\exception\DbException as Exception;
-use think\db\Mongo as Query;
+use rayswoole\db\connector\Mongo as Connection;
+use rayswoole\db\exception\DbException as Exception;
+use rayswoole\db\Mongo as Query;
 
 class Mongo
 {

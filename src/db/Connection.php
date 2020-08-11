@@ -10,10 +10,10 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\db;
+namespace rayswoole\db;
 
 use Psr\SimpleCache\CacheInterface;
-use think\DbManager;
+use rayswoole\DbManager;
 
 /**
  * 数据库连接基础类

@@ -10,12 +10,12 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\model\concern;
+namespace rayswoole\model\concern;
 
 use InvalidArgumentException;
-use think\db\Raw;
+use rayswoole\db\Raw;
 use think\helper\Str;
-use think\model\Relation;
+use rayswoole\model\Relation;
 
 /**
  * 模型数据处理

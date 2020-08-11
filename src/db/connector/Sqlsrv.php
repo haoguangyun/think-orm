@@ -9,10 +9,10 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace think\db\connector;
+namespace rayswoole\db\connector;
 
 use PDO;
-use think\db\PDOConnection;
+use rayswoole\db\PDOConnection;
 
 /**
  * Sqlsrv数据库驱动

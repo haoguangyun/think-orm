@@ -10,12 +10,12 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\db\builder;
+namespace rayswoole\db\builder;
 
-use think\db\Builder;
-use think\db\exception\DbException as Exception;
-use think\db\Query;
-use think\db\Raw;
+use rayswoole\db\Builder;
+use rayswoole\db\exception\DbException as Exception;
+use rayswoole\db\Query;
+use rayswoole\db\Raw;
 
 /**
  * mysql数据库驱动

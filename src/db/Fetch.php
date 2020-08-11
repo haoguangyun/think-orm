@@ -10,9 +10,9 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\db;
+namespace rayswoole\db;
 
-use think\db\exception\DbException as Exception;
+use rayswoole\db\exception\DbException as Exception;
 use think\helper\Str;
 
 /**

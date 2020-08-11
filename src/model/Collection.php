@@ -10,11 +10,11 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\model;
+namespace rayswoole\model;
 
 use think\Collection as BaseCollection;
-use think\Model;
-use think\Paginator;
+use rayswoole\Model;
+use rayswoole\Paginator;
 
 /**
  * 模型数据集类

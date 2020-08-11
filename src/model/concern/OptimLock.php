@@ -10,9 +10,9 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\model\concern;
+namespace rayswoole\model\concern;
 
-use think\db\exception\DbException as Exception;
+use rayswoole\db\exception\DbException as Exception;
 
 /**
  * 乐观锁

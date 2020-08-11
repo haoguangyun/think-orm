@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\db;
+namespace rayswoole\db;
 
 use PDOStatement;
 use think\helper\Str;

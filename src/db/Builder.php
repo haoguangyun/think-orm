@@ -10,11 +10,11 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\db;
+namespace rayswoole\db;
 
 use Closure;
 use PDO;
-use think\db\exception\DbException as Exception;
+use rayswoole\db\exception\DbException as Exception;
 
 /**
  * Db Builder

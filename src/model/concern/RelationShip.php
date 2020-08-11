@@ -10,27 +10,27 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\model\concern;
+namespace rayswoole\model\concern;
 
 use Closure;
 use Swoole\Coroutine;
 use think\Collection;
-use think\db\BaseQuery as Query;
-use think\db\exception\DbException as Exception;
+use rayswoole\db\BaseQuery as Query;
+use rayswoole\db\exception\DbException as Exception;
 use think\helper\Str;
-use think\Model;
-use think\model\Relation;
-use think\model\relation\BelongsTo;
-use think\model\relation\BelongsToMany;
-use think\model\relation\HasMany;
-use think\model\relation\HasManyThrough;
-use think\model\relation\HasOne;
-use think\model\relation\HasOneThrough;
-use think\model\relation\MorphMany;
-use think\model\relation\MorphOne;
-use think\model\relation\MorphTo;
-use think\model\relation\MorphToMany;
-use think\model\relation\OneToOne;
+use rayswoole\Model;
+use rayswoole\model\Relation;
+use rayswoole\model\relation\BelongsTo;
+use rayswoole\model\relation\BelongsToMany;
+use rayswoole\model\relation\HasMany;
+use rayswoole\model\relation\HasManyThrough;
+use rayswoole\model\relation\HasOne;
+use rayswoole\model\relation\HasOneThrough;
+use rayswoole\model\relation\MorphMany;
+use rayswoole\model\relation\MorphOne;
+use rayswoole\model\relation\MorphTo;
+use rayswoole\model\relation\MorphToMany;
+use rayswoole\model\relation\OneToOne;
 
 /**
  * 模型关联处理

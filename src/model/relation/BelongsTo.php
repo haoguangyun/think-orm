@@ -10,12 +10,12 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\model\relation;
+namespace rayswoole\model\relation;
 
 use Closure;
-use think\db\BaseQuery as Query;
+use rayswoole\db\BaseQuery as Query;
 use think\helper\Str;
-use think\Model;
+use rayswoole\Model;
 
 /**
  * BelongsTo关联类

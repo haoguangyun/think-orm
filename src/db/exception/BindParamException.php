@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\db\exception;
+namespace rayswoole\db\exception;
 
 /**
  * PDO参数绑定异常

@@ -10,11 +10,11 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\db\concern;
+namespace rayswoole\db\concern;
 
 use Closure;
-use think\db\BaseQuery;
-use think\db\Raw;
+use rayswoole\db\BaseQuery;
+use rayswoole\db\Raw;
 
 trait WhereQuery
 {

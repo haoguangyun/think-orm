@@ -10,10 +10,10 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\model\concern;
+namespace rayswoole\model\concern;
 
 use Swoole\Coroutine;
-use think\db\exception\ModelEventException;
+use rayswoole\db\exception\ModelEventException;
 use think\helper\Str;
 
 /**

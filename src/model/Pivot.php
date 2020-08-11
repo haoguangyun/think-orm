@@ -10,9 +10,9 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\model;
+namespace rayswoole\model;
 
-use think\Model;
+use rayswoole\Model;
 
 /**
  * 多对多中间表模型类

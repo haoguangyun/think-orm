@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace think\facade;
+namespace rayswoole\facade;
 
 if (class_exists('think\Facade')) {
     class Facade extends \think\Facade

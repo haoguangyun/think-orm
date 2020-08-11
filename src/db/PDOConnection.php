@@ -10,15 +10,15 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\db;
+namespace rayswoole\db;
 
 use Closure;
 use PDO;
 use PDOStatement;
-use think\db\exception\BindParamException;
-use think\db\exception\DbException;
-use think\db\exception\PDOException;
-use think\pool\DbPool;
+use rayswoole\db\exception\BindParamException;
+use rayswoole\db\exception\DbException;
+use rayswoole\db\exception\PDOException;
+use rayswoole\pool\DbPool;
 
 /**
  * 数据库连接基础类

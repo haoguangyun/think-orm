@@ -9,17 +9,17 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace think\model\relation;
+namespace rayswoole\model\relation;
 
 use Closure;
 use think\Collection;
-use think\db\BaseQuery as Query;
-use think\db\exception\DbException as Exception;
-use think\db\Raw;
-use think\Model;
-use think\model\Pivot;
-use think\model\Relation;
-use think\Paginator;
+use rayswoole\db\BaseQuery as Query;
+use rayswoole\db\exception\DbException as Exception;
+use rayswoole\db\Raw;
+use rayswoole\Model;
+use rayswoole\model\Pivot;
+use rayswoole\model\Relation;
+use rayswoole\Paginator;
 
 /**
  * 多对多关联类

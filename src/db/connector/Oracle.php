@@ -7,11 +7,11 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace think\db\connector;
+namespace rayswoole\db\connector;
 
 use PDO;
-use think\db\BaseQuery;
-use think\db\PDOConnection;
+use rayswoole\db\BaseQuery;
+use rayswoole\db\PDOConnection;
 
 /**
  * Oracle数据库驱动

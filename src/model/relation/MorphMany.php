@@ -9,15 +9,15 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace think\model\relation;
+namespace rayswoole\model\relation;
 
 use Closure;
 use think\Collection;
-use think\db\BaseQuery as Query;
-use think\db\exception\DbException as Exception;
+use rayswoole\db\BaseQuery as Query;
+use rayswoole\db\exception\DbException as Exception;
 use think\helper\Str;
-use think\Model;
-use think\model\Relation;
+use rayswoole\Model;
+use rayswoole\model\Relation;
 
 /**
  * 多态一对多关联

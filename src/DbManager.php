@@ -10,16 +10,16 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think;
+namespace rayswoole;
 
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 use Swoole\Coroutine;
-use think\db\BaseQuery;
-use think\db\ConnectionInterface;
-use think\db\Query;
-use think\db\Raw;
+use rayswoole\db\BaseQuery;
+use rayswoole\db\ConnectionInterface;
+use rayswoole\db\Query;
+use rayswoole\db\Raw;
 
 /**
  * Class DbManager

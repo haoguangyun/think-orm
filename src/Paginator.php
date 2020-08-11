@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think;
+namespace rayswoole;
 
 use ArrayAccess;
 use ArrayIterator;
@@ -20,7 +20,7 @@ use DomainException;
 use IteratorAggregate;
 use JsonSerializable;
 use Swoole\Coroutine;
-use think\paginator\driver\Bootstrap;
+use rayswoole\paginator\driver\Bootstrap;
 use Traversable;
 
 /**

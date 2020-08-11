@@ -10,7 +10,7 @@
  ** ----------------------------------------------------------------------
  **/
 
-namespace think\pool;
+namespace rayswoole\pool;
 
 class DbPool
 {

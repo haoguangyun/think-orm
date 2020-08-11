@@ -10,14 +10,14 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\model\concern;
+namespace rayswoole\model\concern;
 
 use think\Collection;
-use think\db\exception\DbException as Exception;
+use rayswoole\db\exception\DbException as Exception;
 use think\helper\Str;
-use think\Model;
-use think\model\Collection as ModelCollection;
-use think\model\relation\OneToOne;
+use rayswoole\Model;
+use rayswoole\model\Collection as ModelCollection;
+use rayswoole\model\relation\OneToOne;
 
 /**
  * 模型数据转换处理

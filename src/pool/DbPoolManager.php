@@ -8,7 +8,7 @@
  ** ----------------------------------------------------------------------
  **/
 
-namespace think\pool;
+namespace rayswoole\pool;
 
 use Swoole\Coroutine;
 use Swoole\Coroutine\Channel;

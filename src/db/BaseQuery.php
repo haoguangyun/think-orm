@@ -10,15 +10,15 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think\db;
+namespace rayswoole\db;
 
 use think\Collection;
-use think\db\exception\DataNotFoundException;
-use think\db\exception\DbException as Exception;
-use think\db\exception\ModelNotFoundException;
+use rayswoole\db\exception\DataNotFoundException;
+use rayswoole\db\exception\DbException as Exception;
+use rayswoole\db\exception\ModelNotFoundException;
 use think\helper\Str;
-use think\Model;
-use think\Paginator;
+use rayswoole\Model;
+use rayswoole\Paginator;
 
 /**
  * 数据查询基础类
