@@ -34,8 +34,8 @@ $poolConfig = new \rayswoole\pool\DbPoolConfig();
 //设置最小连接数
 $poolConfig->withMin(5);
 //设置最大连接数
-$poolConfig->withMax();
-//设置定时器执行频率,创建最小进程、回收空闲进程
+$poolConfig->withMax(20);
+//设置定时器执行频率(毫秒),创建最小进程、回收空闲进程
 $poolConfig->withIntervalTime(15*1000)
 //设置连接可空闲时间
 $poolConfig->withIdleTime(10)
