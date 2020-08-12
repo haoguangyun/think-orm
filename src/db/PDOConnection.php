@@ -320,7 +320,7 @@ abstract class PDOConnection extends Connection
 
         if (!isset(static::$info[$schema]) || $force) {
             // 读取字段缓存
-            $cacheKey   = $this->getSchemaCacheKey($schema);
+            /*$cacheKey   = $this->getSchemaCacheKey($schema);
             $cacheField = $this->config['fields_cache'] && !empty($this->cache);
 
             if ($cacheField && !$force) {
@@ -332,7 +332,8 @@ abstract class PDOConnection extends Connection
                 if ($cacheField) {
                     $this->cache->set($cacheKey, $info);
                 }
-            }
+            }*/
+            $info = $this->getTableFieldsInfo($tableName);
 
             $pk      = $info['_pk'] ?? null;
             $autoinc = $info['_autoinc'] ?? null;
@@ -1236,8 +1237,8 @@ abstract class PDOConnection extends Connection
 
             // 判断占位符
             $sql = is_numeric($key) ?
-            substr_replace($sql, $value, strpos($sql, '?'), 1) :
-            substr_replace($sql, $value, strpos($sql, ':' . $key), strlen(':' . $key));
+                substr_replace($sql, $value, strpos($sql, '?'), 1) :
+                substr_replace($sql, $value, strpos($sql, ':' . $key), strlen(':' . $key));
         }
 
         return rtrim($sql);
