@@ -195,7 +195,7 @@ abstract class PDOConnection extends Connection
      */
     public function getBuilderClass(): string
     {
-        return $this->getConfig('builder') ?: '\\think\\db\\builder\\' . ucfirst($this->getConfig('type'));
+        return $this->getConfig('builder') ?: '\\rayswoole\\db\\builder\\' . ucfirst($this->getConfig('type'));
     }
 
     /**

@@ -2,11 +2,14 @@
 /**
  ** RAYSWOOLE [ HIGH PERFORMANCE CMS BASED ON SWOOLE ]
  ** ----------------------------------------------------------------------
- ** Copyright easyswoole/pool
+ ** Idea From easyswoole/pool
+ ** ----------------------------------------------------------------------
+ ** Author: haoguangyun <admin@haoguangyun.com>
  ** ----------------------------------------------------------------------
  ** Last-Modified: 2020-08-11 16:49
  ** ----------------------------------------------------------------------
  **/
+
 
 namespace rayswoole\pool;
 
@@ -104,7 +107,7 @@ class DbPoolManager
             return null;
         }
         if ($timeout === null) {
-            $timeout = $this->getConfig()->getGetObjectTimeout();
+            $timeout = $this->conf->getTimeout();
         }
         $object = null;
         if ($this->poolChannel->isEmpty()) {
@@ -227,8 +230,8 @@ class DbPoolManager
      */
     public function intervalCheck()
     {
-        $this->idleCheck($this->getConfig()->getMaxIdleTime());
-        $this->keepMin($this->getConfig()->getMinObjectNum());
+        $this->idleCheck($this->conf->getIdleTime());
+        $this->keepMin($this->conf->getMin());
     }
 
     /**
@@ -246,7 +249,7 @@ class DbPoolManager
     public function keepMin(?int $num = null): int
     {
         if($num == null){
-            $num = $this->getConfig()->getMinObjectNum();
+            $num = $this->conf->getMin();
         }
         if ($this->createdNum < $num) {
             $left = $num - $this->createdNum;
@@ -275,8 +278,8 @@ class DbPoolManager
         return [
             'created' => $this->createdNum,
             'inuse'   => $this->createdNum - $this->poolChannel->stats()['queue_num'],
-            'max'     => $this->getConfig()->getMaxObjectNum(),
-            'min'     => $this->getConfig()->getMinObjectNum()
+            'max'     => $this->conf->getMax(),
+            'min'     => $this->conf->getMin()
         ];
     }
 
@@ -291,7 +294,7 @@ class DbPoolManager
         $this->init();
         $obj = null;
         $this->createdNum++;
-        if ($this->createdNum > $this->getConfig()->getMaxObjectNum()) {
+        if ($this->createdNum > $this->conf->getMax()) {
             $this->createdNum--;
             return false;
         }
@@ -393,9 +396,9 @@ class DbPoolManager
     private function init()
     {
         if ((!$this->poolChannel) && (!$this->destroy)) {
-            $this->poolChannel = new Channel($this->conf->getMaxObjectNum() + 8);
-            if ($this->conf->getIntervalCheckTime() > 0) {
-                $this->timerId = Timer::tick($this->conf->getIntervalCheckTime(), [$this, 'intervalCheck']);
+            $this->poolChannel = new Channel($this->conf->getMax() + 8);
+            if ($this->conf->getIntervalTime() > 0) {
+                $this->timerId = Timer::tick($this->conf->getIntervalTime(), [$this, 'intervalCheck']);
             }
         }
     }

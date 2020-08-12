@@ -2,9 +2,11 @@
 /**
  ** RAYSWOOLE [ HIGH PERFORMANCE CMS BASED ON SWOOLE ]
  ** ----------------------------------------------------------------------
- ** Copyright easyswoole/pool
+ ** Idea From easyswoole/pool
  ** ----------------------------------------------------------------------
- ** Last-Modified: 2020-08-11 16:49
+ ** Author: haoguangyun <admin@haoguangyun.com>
+ ** ----------------------------------------------------------------------
+ ** Last-Modified: 2020-08-12 10:00
  ** ----------------------------------------------------------------------
  **/
 
@@ -13,114 +15,137 @@ namespace rayswoole\pool;
 
 class DbPoolConfig
 {
-    protected $intervalCheckTime = 15*1000;
-    protected $maxIdleTime = 10;
-    protected $maxObjectNum = 20;
-    protected $minObjectNum = 5;
-    protected $getObjectTimeout = 3.0;
+    protected $intervalTime = 15*1000;
+    protected $idleTime = 10;
+    protected $max = 20;
+    protected $min = 5;
+    protected $timeout = 3.0;
 
     protected $extraConf;
 
     /**
+     * 获取定时器设置
      * @return float|int
      */
-    public function getIntervalCheckTime()
+    public function getIntervalTime()
     {
-        return $this->intervalCheckTime;
+        return $this->intervalTime;
     }
 
     /**
-     * @param $intervalCheckTime
+     * 设置定时器
+     * @param $IntervalTime
      * @return Config
      */
-    public function setIntervalCheckTime($intervalCheckTime): DbPoolConfig
+    public function withIntervalTime(int $intervalTime): DbPoolConfig
     {
-        $this->intervalCheckTime = $intervalCheckTime;
+        $this->intervalTime = $intervalTime;
         return $this;
     }
 
     /**
+     * 获取连接最大闲置时间
      * @return int
      */
-    public function getMaxIdleTime(): int
+    public function getIdleTime(): int
     {
-        return $this->maxIdleTime;
+        return $this->idleTime;
     }
 
     /**
-     * @param int $maxIdleTime
+     * 设置连接最大闲置时间
+     * @param int $idleTime
      * @return Config
      */
-    public function setMaxIdleTime(int $maxIdleTime): DbPoolConfig
+    public function withIdleTime(int $idleTime): DbPoolConfig
     {
-        $this->maxIdleTime = $maxIdleTime;
+        $this->idleTime = $idleTime;
         return $this;
     }
 
     /**
+     * 获取连接池最大数量设置
      * @return int
      */
-    public function getMaxObjectNum(): int
+    public function getMax(): int
     {
-        return $this->maxObjectNum;
+        return $this->max;
     }
 
-    public function setMaxObjectNum(int $maxObjectNum): DbPoolConfig
+    /**
+     * 设置连接池最大数量
+     * @param int $max
+     * @return DbPoolConfig
+     * @throws \Exception
+     */
+    public function withMax(int $max): DbPoolConfig
     {
-        if($this->minObjectNum >= $maxObjectNum){
+        if($this->min >= $max){
             throw new \Exception('min num is bigger than max');
         }
-        $this->maxObjectNum = $maxObjectNum;
+        $this->max = $max;
+        return $this;
+    }
+
+    /**
+     * 获取连接池最少数量设置
+     * @return int
+     */
+    public function getMin(): int
+    {
+        return $this->min;
+    }
+
+    /**
+     * 设置最少连接数量
+     * @param int $min
+     * @return DbPoolConfig
+     * @throws \Exception
+     */
+    public function withMin(int $min): DbPoolConfig
+    {
+        if($min >= $this->max){
+            throw new \Exception('min num is bigger than max');
+        }
+        $this->min = $min;
         return $this;
     }
 
     /**
      * @return float
      */
-    public function getGetObjectTimeout(): float
+    public function getTimeout(): float
     {
-        return $this->getObjectTimeout;
+        return $this->timeout;
     }
 
     /**
-     * @param float $getObjectTimeout
+     * @param float $timeout
      * @return Config
      */
-    public function setGetObjectTimeout(float $getObjectTimeout): DbPoolConfig
+    public function withTimeout(float $timeout): DbPoolConfig
     {
-        $this->getObjectTimeout = $getObjectTimeout;
+        $this->timeout = $timeout;
         return $this;
     }
 
+    /**
+     * 获取额外配置信息
+     * @return mixed
+     */
     public function getExtraConf()
     {
         return $this->extraConf;
     }
 
     /**
+     * 设置额外配置信息
      * @param $extraConf
      * @return Config
      */
-    public function setExtraConf($extraConf): DbPoolConfig
+    public function withExtraConf($extraConf): DbPoolConfig
     {
         $this->extraConf = $extraConf;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getMinObjectNum(): int
-    {
-        return $this->minObjectNum;
-    }
-
-    public function setMinObjectNum(int $minObjectNum): DbPoolConfig
-    {
-        if($minObjectNum >= $this->maxObjectNum){
-            throw new \Exception('min num is bigger than max');
-        }
-        $this->minObjectNum = $minObjectNum;
         return $this;
     }
 }

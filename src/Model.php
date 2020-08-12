@@ -16,8 +16,8 @@ use ArrayAccess;
 use Closure;
 use JsonSerializable;
 use Swoole\Coroutine;
-use rayswoole\contract\Arrayable;
-use rayswoole\contract\Jsonable;
+use think\contract\Arrayable;
+use think\contract\Jsonable;
 use rayswoole\db\BaseQuery as Query;
 
 /**

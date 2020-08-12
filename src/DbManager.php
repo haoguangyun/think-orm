@@ -287,7 +287,7 @@ class DbManager
         if (false !== strpos($type, '\\')) {
             $class = $type;
         } else {
-            $class = '\\think\\db\\connector\\' . ucfirst($type);
+            $class = '\\rayswoole\\db\\connector\\' . ucfirst($type);
         }
 
         /** @var ConnectionInterface $connection */
