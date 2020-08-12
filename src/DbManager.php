@@ -253,6 +253,13 @@ class DbManager
         $instance = 'DbManager_'.$name;
         if ($force || !isset(Coroutine::getContext()[$instance])) {
             Coroutine::getContext()[$instance] = $this->createConnection($name);
+            Coroutine::defer(function (){
+                if (isset(Db::$instance)){
+                    Db::reset();
+                } elseif (isset(\rayswoole\facade\Db::$instance)){
+                    \rayswoole\facade\Db::reset();
+                }
+            });
         }
 
         return Coroutine::getContext()[$instance];
@@ -389,6 +396,13 @@ class DbManager
                 call_user_func_array($callback, [$this]);
             }
         }
+    }
+
+    public function reset()
+    {
+        $this->dbLog = [];
+        $this->event = [];
+        $this->queryTimes = 0;
     }
 
     public function __call($method, $args)

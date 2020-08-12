@@ -359,7 +359,7 @@ class DbPoolManager
         }
     }
 
-    function reset(): AbstractPool
+    function reset(): DbPoolManager
     {
         $this->destroy();
         $this->createdNum = 0;

@@ -21,7 +21,7 @@ class Db {
      * 始终创建新的对象实例
      * @var bool
      */
-    private static $instance;
+    public static $instance;
 
     public static function init(array $config = null)
     {

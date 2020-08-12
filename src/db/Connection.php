@@ -73,7 +73,7 @@ abstract class Connection implements ConnectionInterface
      * 数据表信息
      * @var array
      */
-    protected $info = [];
+    protected static $info = [];
 
     /**
      * 查询开始时间

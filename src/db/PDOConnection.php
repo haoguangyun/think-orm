@@ -115,12 +115,6 @@ abstract class PDOConnection extends Connection
     protected $attrCase = PDO::CASE_LOWER;
 
     /**
-     * 数据表信息
-     * @var array
-     */
-    protected $info = [];
-
-    /**
      * 查询开始时间
      * @var float
      */
@@ -324,7 +318,7 @@ abstract class PDOConnection extends Connection
             $schema = $tableName;
         }
 
-        if (!isset($this->info[$schema]) || $force) {
+        if (!isset(static::$info[$schema]) || $force) {
             // 读取字段缓存
             $cacheKey   = $this->getSchemaCacheKey($schema);
             $cacheField = $this->config['fields_cache'] && !empty($this->cache);
@@ -349,7 +343,7 @@ abstract class PDOConnection extends Connection
                 $bind[$name] = $this->getFieldBindType($val);
             }
 
-            $this->info[$schema] = [
+            static::$info[$schema] = [
                 'fields'  => array_keys($info),
                 'type'    => $info,
                 'bind'    => $bind,
@@ -358,7 +352,7 @@ abstract class PDOConnection extends Connection
             ];
         }
 
-        return $this->info[$schema];
+        return static::$info[$schema];
     }
 
     /**
