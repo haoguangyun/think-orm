@@ -1,6 +1,6 @@
 {
     "name": "rayswoole/think-orm",
-    "description": "基于think-orm协程化, 适用于swoole",
+    "description": "think-orm协程化版本, 仅在swoole协程环境使用",
     "keywords": [
         "swoole",
         "coroutine",
@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "rayswoole\\": "src"
+            "rayswoole\\orm\\": "src"
         },
         "files": []
     }

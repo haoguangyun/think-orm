@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\db\exception;
+namespace rayswoole\orm\db\exception;
 
 /**
  * PDO异常处理类

@@ -9,9 +9,9 @@
 // | Author: zhangyajun <448901948@qq.com>
 // +----------------------------------------------------------------------
 
-namespace rayswoole\paginator\driver;
+namespace rayswoole\orm\paginator\driver;
 
-use rayswoole\Paginator;
+use rayswoole\orm\Paginator;
 
 /**
  * Bootstrap 分页驱动

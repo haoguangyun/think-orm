@@ -10,16 +10,16 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\db\concern;
+namespace rayswoole\orm\db\concern;
 
 use Closure;
 use think\Collection;
-use rayswoole\db\exception\DataNotFoundException;
-use rayswoole\db\exception\DbException;
-use rayswoole\db\exception\ModelNotFoundException;
-use rayswoole\db\Query;
+use rayswoole\orm\db\exception\DataNotFoundException;
+use rayswoole\orm\db\exception\DbException;
+use rayswoole\orm\db\exception\ModelNotFoundException;
+use rayswoole\orm\db\Query;
 use think\helper\Str;
-use rayswoole\Model;
+use rayswoole\orm\Model;
 
 /**
  * 查询数据处理

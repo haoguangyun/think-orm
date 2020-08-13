@@ -9,7 +9,7 @@
 // | Author: yunwuxin <448901948@qq.com>
 // +----------------------------------------------------------------------
 
-namespace rayswoole\db\exception;
+namespace rayswoole\orm\db\exception;
 
 /**
  * 模型事件异常

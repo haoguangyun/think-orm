@@ -10,10 +10,10 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\db\connector;
+namespace rayswoole\orm\db\connector;
 
 use PDO;
-use rayswoole\db\PDOConnection;
+use rayswoole\orm\db\PDOConnection;
 
 /**
  * mysql数据库驱动

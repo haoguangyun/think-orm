@@ -9,10 +9,10 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace rayswoole\db\connector;
+namespace rayswoole\orm\db\connector;
 
 use PDO;
-use rayswoole\db\PDOConnection;
+use rayswoole\orm\db\PDOConnection;
 
 /**
  * Pgsql数据库驱动

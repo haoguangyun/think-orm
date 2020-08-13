@@ -9,27 +9,41 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace rayswoole\facade;
+namespace rayswoole\orm\facade;
 
-use rayswoole\DbManager;
+use rayswoole\orm\DbManager;
+use rayswoole\orm\pool\DbPool;
+use rayswoole\orm\pool\DbPoolConfig;
 
 /**
- * @see \rayswoole\DbManager
- * @mixin \rayswoole\DbManager
+ * class Db
+ * @package rayswoole
+ * @mixin \rayswoole\orm\DbManager
+ * @mixin \rayswoole\orm\BaseQuery
+ * @mixin \rayswoole\orm\Query
  */
 class Db {
     /**
      * 始终创建新的对象实例
-     * @var bool
+     * @var DbManager
      */
     public static $instance;
 
-    public static function init(array $config = null)
+    public static function init(DbPoolConfig $config = null)
     {
-        if (!self::$instance) {
+        if (!self::$instance && is_object($config)) {
+            DbPool::setPoolConfig($config);
             self::$instance = new DbManager();
-            self::$instance->setConfig($config);
+            self::$instance->setConfig($config->getExtraConf());
         }
+        return self::$instance;
+    }
+
+    /**
+     * @return DbManager
+     */
+    static function getInstance()
+    {
         return self::$instance;
     }
 

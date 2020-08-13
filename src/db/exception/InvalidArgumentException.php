@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
-namespace rayswoole\db\exception;
+namespace rayswoole\orm\db\exception;
 
 use Psr\SimpleCache\InvalidArgumentException as SimpleCacheInvalidArgumentInterface;
 

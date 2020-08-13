@@ -9,14 +9,14 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace rayswoole\model\relation;
+namespace rayswoole\orm\model\relation;
 
 use Closure;
 use Exception;
-use rayswoole\db\BaseQuery as Query;
-use rayswoole\db\Raw;
-use rayswoole\Model;
-use rayswoole\model\Pivot;
+use rayswoole\orm\db\BaseQuery as Query;
+use rayswoole\orm\db\Raw;
+use rayswoole\orm\Model;
+use rayswoole\orm\model\Pivot;
 
 /**
  * 多态多对多关联

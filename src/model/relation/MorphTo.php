@@ -9,13 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace rayswoole\model\relation;
+namespace rayswoole\orm\model\relation;
 
 use Closure;
-use rayswoole\db\exception\DbException as Exception;
+use rayswoole\orm\db\exception\DbException as Exception;
 use think\helper\Str;
-use rayswoole\Model;
-use rayswoole\model\Relation;
+use rayswoole\orm\Model;
+use rayswoole\orm\model\Relation;
 
 /**
  * 多态关联类

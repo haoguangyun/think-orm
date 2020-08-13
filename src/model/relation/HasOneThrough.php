@@ -9,11 +9,11 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace rayswoole\model\relation;
+namespace rayswoole\orm\model\relation;
 
 use Closure;
 use think\helper\Str;
-use rayswoole\Model;
+use rayswoole\orm\Model;
 
 /**
  * 远程一对一关联类

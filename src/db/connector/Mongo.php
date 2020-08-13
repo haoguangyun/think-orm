@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\db\connector;
+namespace rayswoole\orm\db\connector;
 
 use Closure;
 use MongoDB\BSON\ObjectID;
@@ -24,11 +24,11 @@ use MongoDB\Driver\Manager;
 use MongoDB\Driver\Query as MongoQuery;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\Driver\WriteConcern;
-use rayswoole\db\BaseQuery;
-use rayswoole\db\builder\Mongo as Builder;
-use rayswoole\db\Connection;
-use rayswoole\db\exception\DbException as Exception;
-use rayswoole\db\Mongo as Query;
+use rayswoole\orm\db\BaseQuery;
+use rayswoole\orm\db\builder\Mongo as Builder;
+use rayswoole\orm\db\Connection;
+use rayswoole\orm\db\exception\DbException as Exception;
+use rayswoole\orm\db\Mongo as Query;
 
 /**
  * Mongo数据库驱动

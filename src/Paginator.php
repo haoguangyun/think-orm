@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole;
+namespace rayswoole\orm;
 
 use ArrayAccess;
 use ArrayIterator;
@@ -20,7 +20,7 @@ use DomainException;
 use IteratorAggregate;
 use JsonSerializable;
 use Swoole\Coroutine;
-use rayswoole\paginator\driver\Bootstrap;
+use rayswoole\orm\paginator\driver\Bootstrap;
 use Traversable;
 
 /**

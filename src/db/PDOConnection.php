@@ -10,15 +10,15 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\db;
+namespace rayswoole\orm\db;
 
 use Closure;
 use PDO;
 use PDOStatement;
-use rayswoole\db\exception\BindParamException;
-use rayswoole\db\exception\DbException;
-use rayswoole\db\exception\PDOException;
-use rayswoole\pool\DbPool;
+use rayswoole\orm\db\exception\BindParamException;
+use rayswoole\orm\db\exception\DbException;
+use rayswoole\orm\db\exception\PDOException;
+use rayswoole\orm\pool\DbPool;
 
 /**
  * 数据库连接基础类
@@ -189,7 +189,7 @@ abstract class PDOConnection extends Connection
      */
     public function getBuilderClass(): string
     {
-        return $this->getConfig('builder') ?: '\\rayswoole\\db\\builder\\' . ucfirst($this->getConfig('type'));
+        return $this->getConfig('builder') ?: '\\rayswoole\\orm\\db\\builder\\' . ucfirst($this->getConfig('type'));
     }
 
     /**

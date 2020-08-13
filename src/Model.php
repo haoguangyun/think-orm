@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole;
+namespace rayswoole\orm;
 
 use ArrayAccess;
 use Closure;
@@ -18,7 +18,7 @@ use JsonSerializable;
 use Swoole\Coroutine;
 use think\contract\Arrayable;
 use think\contract\Jsonable;
-use rayswoole\db\BaseQuery as Query;
+use rayswoole\orm\db\BaseQuery as Query;
 
 /**
  * Class Model

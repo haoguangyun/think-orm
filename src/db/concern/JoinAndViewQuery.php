@@ -10,9 +10,9 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\db\concern;
+namespace rayswoole\orm\db\concern;
 
-use rayswoole\db\Raw;
+use rayswoole\orm\db\Raw;
 use think\helper\Str;
 
 /**

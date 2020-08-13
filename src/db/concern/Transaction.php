@@ -10,9 +10,9 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\db\concern;
+namespace rayswoole\orm\db\concern;
 
-use rayswoole\db\BaseQuery;
+use rayswoole\orm\db\BaseQuery;
 
 /**
  * 事务支持

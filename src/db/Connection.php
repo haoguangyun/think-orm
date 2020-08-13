@@ -10,10 +10,10 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\db;
+namespace rayswoole\orm\db;
 
 use Psr\SimpleCache\CacheInterface;
-use rayswoole\DbManager;
+use rayswoole\orm\DbManager;
 
 /**
  * 数据库连接基础类

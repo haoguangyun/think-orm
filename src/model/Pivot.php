@@ -10,9 +10,9 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\model;
+namespace rayswoole\orm\model;
 
-use rayswoole\Model;
+use rayswoole\orm\Model;
 
 /**
  * 多对多中间表模型类

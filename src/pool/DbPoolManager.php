@@ -11,7 +11,7 @@
  **/
 
 
-namespace rayswoole\pool;
+namespace rayswoole\orm\pool;
 
 use Swoole\Coroutine;
 use Swoole\Coroutine\Channel;
@@ -128,27 +128,6 @@ class DbPoolManager
             //标记该对象已经被使用，不在pool中
             $this->objHash[$hash] = false;
             $object->__lastUseTime = time();
-            if ($object instanceof ObjectInterface) {
-                try {
-                    if ($object->beforeUse() === false) {
-                        $this->unsetObj($object);
-                        if ($tryTimes <= 0) {
-                            return null;
-                        } else {
-                            $tryTimes--;
-                            return $this->getObj($timeout, $tryTimes);
-                        }
-                    }
-                } catch (\Throwable $throwable) {
-                    $this->unsetObj($object);
-                    if ($tryTimes <= 0) {
-                        throw $throwable;
-                    } else {
-                        $tryTimes--;
-                        return $this->getObj($timeout, $tryTimes);
-                    }
-                }
-            }
             return $object;
         } else {
             return null;
@@ -158,7 +137,7 @@ class DbPoolManager
     /*
      * 彻底释放一个对象
      */
-    public function unsetObj($obj): bool
+    public function unsetObj(&$obj): bool
     {
         if (!$this->isInPool($obj)) {
             /*
@@ -171,17 +150,8 @@ class DbPoolManager
             }
             $hash = $obj->__objHash;
             unset($this->objHash[$hash]);
-            if ($obj instanceof ObjectInterface) {
-                try {
-                    $obj->gc();
-                } catch (\Throwable $throwable) {
-                    throw $throwable;
-                } finally {
-                    $this->createdNum--;
-                }
-            } else {
-                $this->createdNum--;
-            }
+            $obj = null;
+            $this->createdNum--;
             return true;
         } else {
             return false;
@@ -396,6 +366,9 @@ class DbPoolManager
     private function init()
     {
         if ((!$this->poolChannel) && (!$this->destroy)) {
+            if ($this->conf->getMin() >= $this->conf->getMax() ){
+                throw new \Exception('min num is bigger than max');
+            }
             $this->poolChannel = new Channel($this->conf->getMax() + 8);
             if ($this->conf->getIntervalTime() > 0) {
                 $this->timerId = Timer::tick($this->conf->getIntervalTime(), [$this, 'intervalCheck']);

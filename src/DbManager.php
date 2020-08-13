@@ -10,16 +10,16 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole;
+namespace rayswoole\orm;
 
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 use Swoole\Coroutine;
-use rayswoole\db\BaseQuery;
-use rayswoole\db\ConnectionInterface;
-use rayswoole\db\Query;
-use rayswoole\db\Raw;
+use rayswoole\orm\db\BaseQuery;
+use rayswoole\orm\db\ConnectionInterface;
+use rayswoole\orm\db\Query;
+use rayswoole\orm\db\Raw;
 
 /**
  * Class DbManager
@@ -254,11 +254,7 @@ class DbManager
         if ($force || !isset(Coroutine::getContext()[$instance])) {
             Coroutine::getContext()[$instance] = $this->createConnection($name);
             Coroutine::defer(function (){
-                if (isset(Db::$instance)){
-                    Db::reset();
-                } elseif (isset(\rayswoole\facade\Db::$instance)){
-                    \rayswoole\facade\Db::reset();
-                }
+                $this->reset();
             });
         }
 
@@ -294,7 +290,7 @@ class DbManager
         if (false !== strpos($type, '\\')) {
             $class = $type;
         } else {
-            $class = '\\rayswoole\\db\\connector\\' . ucfirst($type);
+            $class = '\\rayswoole\\orm\\db\\connector\\' . ucfirst($type);
         }
 
         /** @var ConnectionInterface $connection */

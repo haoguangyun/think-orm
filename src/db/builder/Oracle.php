@@ -8,10 +8,10 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\db\builder;
+namespace rayswoole\orm\db\builder;
 
-use rayswoole\db\Builder;
-use rayswoole\db\Query;
+use rayswoole\orm\db\Builder;
+use rayswoole\orm\db\Query;
 
 /**
  * Oracle数据库驱动

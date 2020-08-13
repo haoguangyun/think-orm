@@ -10,12 +10,12 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\db;
+namespace rayswoole\orm\db;
 
 use DateInterval;
 use DateTime;
 use DateTimeInterface;
-use rayswoole\db\exception\InvalidArgumentException;
+use rayswoole\orm\db\exception\InvalidArgumentException;
 
 /**
  * CacheItem实现类

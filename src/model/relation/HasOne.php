@@ -10,12 +10,12 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\model\relation;
+namespace rayswoole\orm\model\relation;
 
 use Closure;
-use rayswoole\db\BaseQuery as Query;
+use rayswoole\orm\db\BaseQuery as Query;
 use think\helper\Str;
-use rayswoole\Model;
+use rayswoole\orm\Model;
 
 /**
  * HasOne 关联类

@@ -9,12 +9,12 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace rayswoole\db\builder;
+namespace rayswoole\orm\db\builder;
 
-use rayswoole\db\Builder;
-use rayswoole\db\exception\DbException as Exception;
-use rayswoole\db\Query;
-use rayswoole\db\Raw;
+use rayswoole\orm\db\Builder;
+use rayswoole\orm\db\exception\DbException as Exception;
+use rayswoole\orm\db\Query;
+use rayswoole\orm\db\Raw;
 
 /**
  * Sqlsrv数据库驱动

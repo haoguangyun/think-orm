@@ -10,7 +10,7 @@
  ** ----------------------------------------------------------------------
  **/
 
-namespace rayswoole\pool;
+namespace rayswoole\orm\pool;
 
 
 class DbPoolConfig
@@ -80,9 +80,6 @@ class DbPoolConfig
      */
     public function withMax(int $max): DbPoolConfig
     {
-        if($this->min >= $max){
-            throw new \Exception('min num is bigger than max');
-        }
         $this->max = $max;
         return $this;
     }
@@ -104,9 +101,6 @@ class DbPoolConfig
      */
     public function withMin(int $min): DbPoolConfig
     {
-        if($min >= $this->max){
-            throw new \Exception('min num is bigger than max');
-        }
         $this->min = $min;
         return $this;
     }

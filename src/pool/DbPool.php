@@ -10,7 +10,7 @@
  ** ----------------------------------------------------------------------
  **/
 
-namespace rayswoole\pool;
+namespace rayswoole\orm\pool;
 
 class DbPool
 {

@@ -10,14 +10,14 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\model\relation;
+namespace rayswoole\orm\model\relation;
 
 use Closure;
 use think\Collection;
-use rayswoole\db\BaseQuery as Query;
+use rayswoole\orm\db\BaseQuery as Query;
 use think\helper\Str;
-use rayswoole\Model;
-use rayswoole\model\Relation;
+use rayswoole\orm\Model;
+use rayswoole\orm\model\Relation;
 
 /**
  * 一对多关联类

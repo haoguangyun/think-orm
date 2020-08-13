@@ -10,13 +10,13 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\model;
+namespace rayswoole\orm\model;
 
 use Closure;
 use ReflectionFunction;
-use rayswoole\db\BaseQuery as Query;
-use rayswoole\db\exception\DbException as Exception;
-use rayswoole\Model;
+use rayswoole\orm\db\BaseQuery as Query;
+use rayswoole\orm\db\exception\DbException as Exception;
+use rayswoole\orm\Model;
 
 /**
  * 模型关联基础类

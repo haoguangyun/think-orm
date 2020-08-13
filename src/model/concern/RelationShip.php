@@ -10,27 +10,27 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\model\concern;
+namespace rayswoole\orm\model\concern;
 
 use Closure;
 use Swoole\Coroutine;
 use think\Collection;
-use rayswoole\db\BaseQuery as Query;
-use rayswoole\db\exception\DbException as Exception;
+use rayswoole\orm\db\BaseQuery as Query;
+use rayswoole\orm\db\exception\DbException as Exception;
 use think\helper\Str;
-use rayswoole\Model;
-use rayswoole\model\Relation;
-use rayswoole\model\relation\BelongsTo;
-use rayswoole\model\relation\BelongsToMany;
-use rayswoole\model\relation\HasMany;
-use rayswoole\model\relation\HasManyThrough;
-use rayswoole\model\relation\HasOne;
-use rayswoole\model\relation\HasOneThrough;
-use rayswoole\model\relation\MorphMany;
-use rayswoole\model\relation\MorphOne;
-use rayswoole\model\relation\MorphTo;
-use rayswoole\model\relation\MorphToMany;
-use rayswoole\model\relation\OneToOne;
+use rayswoole\orm\Model;
+use rayswoole\orm\model\Relation;
+use rayswoole\orm\model\relation\BelongsTo;
+use rayswoole\orm\model\relation\BelongsToMany;
+use rayswoole\orm\model\relation\HasMany;
+use rayswoole\orm\model\relation\HasManyThrough;
+use rayswoole\orm\model\relation\HasOne;
+use rayswoole\orm\model\relation\HasOneThrough;
+use rayswoole\orm\model\relation\MorphMany;
+use rayswoole\orm\model\relation\MorphOne;
+use rayswoole\orm\model\relation\MorphTo;
+use rayswoole\orm\model\relation\MorphToMany;
+use rayswoole\orm\model\relation\OneToOne;
 
 /**
  * 模型关联处理

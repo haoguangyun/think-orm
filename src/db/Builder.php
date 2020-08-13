@@ -10,11 +10,11 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace rayswoole\db;
+namespace rayswoole\orm\db;
 
 use Closure;
 use PDO;
-use rayswoole\db\exception\DbException as Exception;
+use rayswoole\orm\db\exception\DbException as Exception;
 
 /**
  * Db Builder
