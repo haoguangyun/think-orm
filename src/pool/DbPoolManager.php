@@ -19,10 +19,10 @@ use Swoole\Timer;
 
 class DbPoolManager
 {
+    private static $counter = 0;
     private $createdNum = 0;
     /** @var Channel */
     private $poolChannel;
-    private $objHash = [];
     /** @var DbPoolConfig */
     private $conf;
     private $timerId;
@@ -30,316 +30,226 @@ class DbPoolManager
     private $context = [];
     private $dbConfig = [];
 
-    /*
-     * 如果成功创建了,请返回对应的obj
+    /**
+     * 并发锁定, 防止高并发导致导致的抢占
+     * @var bool
      */
-    public function createObject()
-    {
-        $dbConfig = $this->dbConfig;
-        return new \PDO($dbConfig['dsn'], $dbConfig['username'], $dbConfig['password'], $dbConfig['params']);
-    }
+    private $createIng = false;
 
     public function __construct(DbPoolConfig $conf)
     {
         $this->conf = $conf;
     }
 
-    /*
-     * 回收一个对象, 由于调用数据库调用哪个库并不透明, 禁止回收
+    /**
+     * 创建\Pdo对象
+     * @return \Pdo|\PdoCluster
+     * @throws \Exception
      */
-    private function recycleObj($obj): bool
+    public function getObj()
     {
-        /*
-         * 当标记为销毁后，直接进行对象销毁
-         */
-        if ($this->destroy) {
-            $this->unsetObj($obj);
-            return true;
-        }
-        /*
-        * 懒惰模式，可以提前创建 pool对象，因此调用钱执行初始化检测
-        */
-        $this->init();
-        /*
-         * 仅仅允许归属于本pool且不在pool内的对象进行回收
-         */
-        if ($this->isPoolObject($obj) && (!$this->isInPool($obj))) {
-            /*
-             * 主动回收可能存在的上下文
-            */
-            $cid = Coroutine::getCid();
-            if (isset($this->context[$cid]) && $this->context[$cid]->__objHash == $obj->__objHash) {
-                unset($this->context[$cid]);
-            }
-            $hash = $obj->__objHash;
-            //标记为在pool内
-            $this->objHash[$hash] = true;
-            if ($obj instanceof ObjectInterface) {
-                try {
-                    $obj->objectRestore();
-                } catch (\Throwable $throwable) {
-                    //重新标记为非在pool状态,允许进行unset
-                    $this->objHash[$hash] = false;
-                    $this->unsetObj($obj);
-                    throw $throwable;
-                }
-            }
-            $this->poolChannel->push($obj);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /*
-     * tryTimes为出现异常尝试次数
-     */
-    private function getObj(float $timeout = null, int $tryTimes = 3)
-    {
-        /*
-        * 懒惰模式，可以提前创建 pool对象，因此调用钱执行初始化检测
-        */
-        $this->init();
-        /*
-         * 当标记为销毁后，禁止取出对象
-         */
-        if ($this->destroy) {
-            return null;
-        }
-        if ($timeout === null) {
-            $timeout = $this->conf->getTimeout();
-        }
-        $object = null;
-        if ($this->poolChannel->isEmpty()) {
-            try {
-                $this->initObject();
-            } catch (\Throwable $throwable) {
-                if ($tryTimes <= 0) {
-                    throw $throwable;
-                } else {
-                    $tryTimes--;
-                    return $this->getObj($timeout, $tryTimes);
-                }
-            }
-        }
-        $object = $this->poolChannel->pop($timeout);
-        if (is_object($object)) {
-            $hash = $object->__objHash;
-            //标记该对象已经被使用，不在pool中
-            $this->objHash[$hash] = false;
-            $object->__lastUseTime = time();
-            return $object;
-        } else {
-            return null;
-        }
-    }
-
-    /*
-     * 彻底释放一个对象
-     */
-    public function unsetObj(&$obj): bool
-    {
-        if (!$this->isInPool($obj)) {
-            /*
-             * 主动回收可能存在的上下文
-             */
-            $cid = Coroutine::getCid();
-            //当obj等于当前协程defer的obj时,则清除
-            if (isset($this->context[$cid]) && $this->context[$cid]->__objHash == $obj->__objHash) {
-                unset($this->context[$cid]);
-            }
-            $hash = $obj->__objHash;
-            unset($this->objHash[$hash]);
-            $obj = null;
-            $this->createdNum--;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /*
-     * 超过$idleTime未出队使用的，将会被回收。
-     */
-    public function idleCheck(int $idleTime)
-    {
-        /*
-        * 懒惰模式，可以提前创建 pool对象，因此调用钱执行初始化检测
-        */
-        $this->init();
-        $size = $this->poolChannel->length();
-        while (!$this->poolChannel->isEmpty() && $size >= 0) {
-            $size--;
-            $item = $this->poolChannel->pop(0.01);
-            if(!$item){
-                continue;
-            }
-            //回收超时没有使用的链接
-            if (time() - $item->__lastUseTime > $idleTime) {
-                //标记为不在队列内，允许进行gc回收
-                $hash = $item->__objHash;
-                $this->objHash[$hash] = false;
-                $this->unsetObj($item);
-            } else {
-                //执行itemIntervalCheck检查
-                if(!$this->itemIntervalCheck($item)){
-                    //标记为不在队列内，允许进行gc回收
-                    $hash = $item->__objHash;
-                    $this->objHash[$hash] = false;
-                    $this->unsetObj($item);
-                    continue;
-                }else{
-                    $this->poolChannel->push($item);
-                }
-            }
-        }
-    }
-
-    /*
-     * 允许外部调用
-     */
-    public function intervalCheck()
-    {
-        $this->idleCheck($this->conf->getIdleTime());
-        $this->keepMin($this->conf->getMin());
+        $dbConfig = $this->dbConfig;
+        return new \PDO($dbConfig['dsn'], $dbConfig['username'], $dbConfig['password'], $dbConfig['params']);
     }
 
     /**
-     * @param $item  __lastUseTime 属性表示该对象被最后一次使用的时间
+     * 生产新的连接池对象
      * @return bool
+     * @throws \Throwable
      */
-    protected function itemIntervalCheck($item):bool
-    {
-        return true;
-    }
-
-    /*
-    * 可以解决冷启动问题
-    */
-    public function keepMin(?int $num = null): int
-    {
-        if($num == null){
-            $num = $this->conf->getMin();
-        }
-        if ($this->createdNum < $num) {
-            $left = $num - $this->createdNum;
-            while ($left > 0) {
-                /*
-                 * 避免死循环
-                 */
-                if ($this->initObject() == false) {
-                    break;
-                }
-                $left--;
-            }
-        }
-        return $this->createdNum;
-    }
-
-
-    public function getConfig(): DbPoolConfig
-    {
-        return $this->conf;
-    }
-
-    public function status()
-    {
-        $this->init();
-        return [
-            'created' => $this->createdNum,
-            'inuse'   => $this->createdNum - $this->poolChannel->stats()['queue_num'],
-            'max'     => $this->conf->getMax(),
-            'min'     => $this->conf->getMin()
-        ];
-    }
-
-    private function initObject(): bool
+    private function create(int $tryTimes = 10): bool
     {
         if ($this->destroy) {
             return false;
         }
-        /*
-        * 懒惰模式，可以提前创建 pool对象，因此调用钱执行初始化检测
-        */
         $this->init();
-        $obj = null;
-        $this->createdNum++;
         if ($this->createdNum > $this->conf->getMax()) {
-            $this->createdNum--;
             return false;
         }
-        try {
-            $obj = $this->createObject();
-            if (is_object($obj)) {
-                $hash = substr(md5(microtime(true)), 20,12);
-                $this->objHash[$hash] = true;
-                $obj->__objHash = $hash;
-                $obj->__lastUseTime = time();
-                $this->poolChannel->push($obj);
+        $this->createdNum++;
+        $obj = $this->getObj();
+        if (is_object($obj)) {
+            static::$counter++;
+            $hash = '_'.static::$counter.'_'.$this->createdNum;
+            $obj->_hash = $hash;
+            $obj->_free = true;
+            $obj->_lastTime = time();
+            if($this->poolChannel->push($obj)){
                 return true;
             } else {
-                $this->createdNum--;
+                $obj = null;
+                unset($obj);
             }
-        } catch (\Throwable $throwable) {
-            $this->createdNum--;
-            throw $throwable;
+        }
+        $this->createdNum--;
+        return false;
+    }
+
+    /**
+     * 消费连接池对象
+     * @param int $tryTimes 尝试次数
+     * @return \Pdo|null
+     * @throws \Throwable
+     */
+    private function pop(float $timeOut = -1, int $tryTimes = 3)
+    {
+        if ($this->destroy) {
+            return null;
+        }
+        $this->init();
+        $obj = $this->poolChannel->pop($timeOut);
+        if (is_object($obj)) {
+            $obj->_free = false;
+            return $obj;
+        } else {
+            if ($tryTimes > 0 && $this->createdNum < $this->conf->getMax()) {
+                $this->create();
+                return $this->pop($timeOut, --$tryTimes);
+            }
+            return null;
+        }
+    }
+
+    /**
+     * 将消费过的连接池对象入栈到连接池
+     * @param $obj \Pdo
+     * @return bool
+     * @throws \Exception
+     */
+    private function push($obj): bool
+    {
+        //当标记为销毁后，直接销毁连接
+        if ($this->destroy) {
+            $this->unset($obj);
+            return false;
+        }
+        //如果不是正在使用的连接则直接跳过
+        if (!isset($obj->_free) || $obj->_free === true){
+            return true;
+        }
+        //如果是当前协程创建的连接对象, 一并回收协程上下文
+        //无法通过外部执行当前方法, 该删除由defer操作
+        /*$cid = Coroutine::getCid();
+        if (isset($this->context[$cid]) && $this->context[$cid]->_hash == $obj->_hash) {
+            unset($this->context[$cid]);
+        }*/
+        $obj->_lastTime = time();
+        $obj->_free = true;
+        if($this->poolChannel->push($obj)){
+            return true;
+        }else{
+            $this->unset($obj);
+            return false;
+        }
+    }
+
+    /**
+     * 删除连接对象
+     * @param $obj \Pdo
+     * @return bool
+     */
+    private function unset(&$obj): bool
+    {
+        $obj = null;
+        $this->createdNum--;
+        return true;
+    }
+
+    /**
+     * 检测空间连接并回收
+     * @param int $idleTime
+     * @return bool 是否执行了回收
+     * @throws \Exception
+     */
+    private function checkFree()
+    {
+        //进程池未初始化、进程池为空、进程池满 时均不处理
+        if (!isset($this->poolChannel) || $this->poolChannel->isEmpty() || $this->poolChannel->isFull()){
+            return false;
+        }
+        $idleTime = $this->conf->getIdleTime();
+        $min = $this->conf->getMin();
+        $size = $this->poolChannel->length();
+        $time = time();
+        if ($size > $min){
+            while ($size > $min) {
+                $size--;
+                if(!$obj = $this->poolChannel->pop(0.01)){
+                    continue;
+                }
+                if ($time - $obj->_lastTime > $idleTime || !$this->checkPing($obj)) {
+                    $this->unset($obj);
+                } else {
+                    $this->push($obj);
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 心跳检查
+     * @param $obj \Pdo
+     * @return bool
+     */
+    protected function checkPing($obj):bool
+    {
+        if( time() - $obj->_lastTime > $this->conf->getPing() ){
+            $return = false;
+            try{
+                $obj->_lastTime = time();
+                $ping = $obj->exec('select 1');
+                $return = !empty($ping);//兼容TRUE 以及 +Pong 两种返回状态
+            }catch (\PdoException $redisException){
+                //防止错误输出
+            }finally{
+                return $return;
+            }
+        }else{
+            return true;
+        }
+    }
+
+    /**
+     * 保持进程池最少活跃连接量
+     * @return int 是否执行了增加连接操作
+     * @throws \Throwable
+     */
+    public function checkMin(): int
+    {
+        $this->init();
+        $min = $this->conf->getMin();
+        $length = $this->poolChannel->length();
+        if ($length < $min && $this->createdNum < $this->conf->getMax()) {
+            $left = $min - $length;
+            while ($left > 0) {
+                $this->create();
+                $left--;
+            }
+            return true;
         }
         return false;
     }
 
-    public function isPoolObject($obj): bool
-    {
-        if (isset($obj->__objHash)) {
-            return isset($this->objHash[$obj->__objHash]);
-        } else {
-            return false;
-        }
-    }
-
-    public function isInPool($obj): bool
-    {
-        if ($this->isPoolObject($obj)) {
-            return $this->objHash[$obj->__objHash];
-        } else {
-            return false;
-        }
-    }
-
-    /*
-     * 销毁该pool，但保留pool原有状态
+    /**
+     * 执行检测, 外部调用
+     * @throws \Throwable
      */
-    function destroy()
+    public function intervalCheck()
     {
-        $this->destroy = true;
-        /*
-        * 懒惰模式，可以提前创建 pool对象，因此调用钱执行初始化检测
-        */
-        $this->init();
-        if ($this->timerId && Timer::exists($this->timerId)) {
-            Timer::clear($this->timerId);
-            $this->timerId = null;
-        }
-        if($this->poolChannel){
-            while (!$this->poolChannel->isEmpty()) {
-                $item = $this->poolChannel->pop(0.01);
-                $this->unsetObj($item);
-            }
-            $this->poolChannel->close();
-            $this->poolChannel = null;
+        if (!$this->checkMin()){
+            $this->checkFree();
         }
     }
 
-    function reset(): DbPoolManager
-    {
-        $this->destroy();
-        $this->createdNum = 0;
-        $this->destroy = false;
-        $this->context = [];
-        $this->objHash = [];
-        $this->dbConfig = [];
-        return $this;
-    }
 
+    /**
+     * @param float|null $timeout
+     * @return \Pdo
+     * @throws \Throwable
+     */
     public function defer(array $dbConfig, float $timeout = null)
     {
         $cid = Coroutine::getCid();
@@ -347,29 +257,92 @@ class DbPoolManager
             return $this->context[$cid];
         }
         $this->dbConfig = $dbConfig;
-        $obj = $this->getObj($timeout);
-        if ($obj) {
+        if ($obj = $this->pop($this->conf->getTimeout())) {
             $this->context[$cid] = $obj;
             Coroutine::defer(function () use ($cid) {
                 if (isset($this->context[$cid])) {
-                    $obj = $this->context[$cid];
+                    $this->push($this->context[$cid]);
                     unset($this->context[$cid]);
-                    $this->recycleObj($obj);
                 }
             });
-            return $this->defer($dbConfig, $timeout);
+            return $obj;
         } else {
             throw new \Exception(static::class . " pool is empty");
         }
     }
 
-    private function init()
+    /**
+     * 销毁连接池
+     * @throws \Exception
+     */
+    public function destroy()
     {
-        if ((!$this->poolChannel) && (!$this->destroy)) {
-            if ($this->conf->getMin() >= $this->conf->getMax() ){
+        $this->destroy = true;
+        if ($this->timerId && Timer::exists($this->timerId)) {
+            Timer::clear($this->timerId);
+            $this->timerId = null;
+        }
+        if(isset($this->poolChannel)){
+            //将所有连接对象全部消费并断开连接
+            while (!$this->poolChannel->isEmpty()) {
+                $obj = $this->poolChannel->pop(0.01);
+                $this->unset($obj);
+            }
+            $this->poolChannel->close();
+            $this->poolChannel = null;
+        }
+    }
+
+    /**
+     * 重置连接池
+     * @return static
+     * @throws \Exception
+     */
+    public function reset(): DbPoolManager
+    {
+        $this->destroy();
+        $this->createdNum = 0;
+        $this->destroy = false;
+        $this->context = [];
+        $this->init();
+        return $this;
+    }
+
+    /**
+     * 获取连接池状态
+     * @return array
+     * @throws \Exception
+     */
+    public function status()
+    {
+        $this->init();
+        return [
+            'created' => $this->createdNum,
+            'used'   => $this->createdNum - (isset($this->poolChannel) ? $this->poolChannel->length() : 0),
+            'max'     => $this->conf->getMax(),
+            'min'     => $this->conf->getMin()
+        ];
+    }
+
+    /**
+     * 初始化连接池
+     * @throws \Exception
+     */
+    public function init()
+    {
+        if (!isset($this->poolChannel) && (!$this->destroy)) {
+            if ($this->conf->getMin() >= $this->conf->getMax()){
                 throw new \Exception('min num is bigger than max');
             }
+            if ($this->timerId && Timer::exists($this->timerId)) {
+                Timer::clear($this->timerId);
+                $this->timerId = null;
+            }
+            $this->createdNum = 0;
+            $this->destroy = false;
+            $this->context = [];
             $this->poolChannel = new Channel($this->conf->getMax() + 8);
+            $this->checkMin();
             if ($this->conf->getIntervalTime() > 0) {
                 $this->timerId = Timer::tick($this->conf->getIntervalTime(), [$this, 'intervalCheck']);
             }

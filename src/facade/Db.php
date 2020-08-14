@@ -54,7 +54,7 @@ class Db {
      */
     public static function __callStatic($method, $params)
     {
-        return call_user_func_array([static::init(), $method], $params);
+        return call_user_func_array([static::$instance, $method], $params);
     }
 }
 
