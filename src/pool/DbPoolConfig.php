@@ -20,6 +20,8 @@ class DbPoolConfig
     protected $max = 20;
     protected $min = 5;
     protected $timeout = 3.0;
+    protected $free = 5;
+    protected $pingTime = 30;
 
     protected $extraConf;
 
@@ -140,6 +142,49 @@ class DbPoolConfig
     public function withExtraConf($extraConf): DbPoolConfig
     {
         $this->extraConf = $extraConf;
+        return $this;
+    }
+
+    /**
+     * 获取连接池最少数量设置
+     * @return int
+     */
+    public function getFree(): int
+    {
+        return $this->free;
+    }
+
+    /**
+     * 设置最少连接数量
+     * @param int $min
+     * @return RedisConfig
+     * @throws \Exception
+     */
+    public function withFree(int $free): DbPoolConfig
+    {
+        $this->free = $free;
+        return $this;
+    }
+
+    /**
+     * 获取额外配置信息
+     * @return mixed
+     */
+    public function getPing()
+    {
+        return $this->pingTime;
+    }
+
+    /**
+     * 设置额外配置信息
+     * @param $extraConf
+     * @return Config
+     */
+    public function withPing(int $time): DbPoolConfig
+    {
+        if ($time > 0){
+            $this->pingTime = $time;
+        }
         return $this;
     }
 }

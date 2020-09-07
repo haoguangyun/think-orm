@@ -11,6 +11,7 @@
 
 namespace rayswoole\orm\facade;
 
+use rayswoole\Logger;
 use rayswoole\orm\DbManager;
 use rayswoole\orm\pool\DbPool;
 use rayswoole\orm\pool\DbPoolConfig;
@@ -34,7 +35,13 @@ class Db {
         if (!self::$instance && is_object($config)) {
             DbPool::setPoolConfig($config);
             self::$instance = new DbManager();
-            self::$instance->setConfig($config->getExtraConf());
+            $conf = $config->getExtraConf();
+            self::$instance->setConfig($conf);
+            if ($conf['connections'][$conf['default']]['debug']) {
+                self::$instance->setLog(\rayswoole\Logger::getInstance());
+            } else {
+                self::$instance->setCache(\rayswoole\Cache::getInstance());
+            }
         }
         return self::$instance;
     }

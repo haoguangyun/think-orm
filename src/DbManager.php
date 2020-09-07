@@ -15,7 +15,7 @@ namespace rayswoole\orm;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
-use Swoole\Coroutine;
+use rayswoole\orm\facade\Singleton;
 use rayswoole\orm\db\BaseQuery;
 use rayswoole\orm\db\ConnectionInterface;
 use rayswoole\orm\db\Query;
@@ -97,8 +97,8 @@ class DbManager
 
         Model::setDb($this);
 
-        if (is_object($this->event)) {
-            Model::setEvent($this->event);
+        if (is_object(Singleton::getInstance()->getEvent())) {
+            Model::setEvent(Singleton::getInstance()->getEvent());
         }
 
         Model::maker(function (Model $model) {
@@ -189,7 +189,7 @@ class DbManager
         if ($this->log) {
             $this->log->log($type, $log);
         } else {
-            $this->dbLog[$type][] = $log;
+            Singleton::getInstance()->setDbLog($type, $log);
         }
     }
 
@@ -201,12 +201,7 @@ class DbManager
      */
     public function getDbLog(bool $clear = false): array
     {
-        $logs = $this->dbLog;
-        if ($clear) {
-            $this->dbLog = [];
-        }
-
-        return $logs;
+        return Singleton::getInstance()->getDbLog();
     }
 
     /**
@@ -250,15 +245,10 @@ class DbManager
             $name = $this->getConfig('default', 'mysql');
         }
 
-        $instance = 'DbManager_'.$name;
-        if ($force || !isset(Coroutine::getContext()[$instance])) {
-            Coroutine::getContext()[$instance] = $this->createConnection($name);
-            Coroutine::defer(function (){
-                $this->reset();
-            });
+        if ($force || !Singleton::getInstance()->connect()){
+            Singleton::getInstance()->connect($this->createConnection($name));
         }
-
-        return Coroutine::getContext()[$instance];
+        return Singleton::getInstance()->connect();
     }
 
     /**
@@ -322,7 +312,7 @@ class DbManager
      */
     public function updateQueryTimes(): void
     {
-        $this->queryTimes++;
+        Singleton::getInstance()->updateQueryTimes();
     }
 
     /**
@@ -332,7 +322,7 @@ class DbManager
      */
     public function clearQueryTimes(): void
     {
-        $this->queryTimes = 0;
+        Singleton::getInstance()->clearQueryTimes();
     }
 
     /**
@@ -342,7 +332,7 @@ class DbManager
      */
     public function getQueryTimes(): int
     {
-        return $this->queryTimes;
+        return Singleton::getInstance()->getQueryTimes();
     }
 
     /**
@@ -375,7 +365,7 @@ class DbManager
      */
     public function event(string $event, callable $callback): void
     {
-        $this->event[$event][] = $callback;
+        Singleton::getInstance()->setEvent($event, $callback);
     }
 
     /**
@@ -387,8 +377,9 @@ class DbManager
      */
     public function trigger(string $event, $params = null)
     {
-        if (isset($this->event[$event])) {
-            foreach ($this->event[$event] as $callback) {
+        $events = Singleton::getInstance()->getEvent();
+        if (isset($events[$event])) {
+            foreach ($events[$event] as $callback) {
                 call_user_func_array($callback, [$this]);
             }
         }

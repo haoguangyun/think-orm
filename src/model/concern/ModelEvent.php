@@ -12,7 +12,7 @@ declare (strict_types = 1);
 
 namespace rayswoole\orm\model\concern;
 
-use Swoole\Coroutine;
+use rayswoole\orm\facade\Singleton;
 use rayswoole\orm\db\exception\ModelEventException;
 use think\helper\Str;
 
@@ -42,7 +42,7 @@ trait ModelEvent
      */
     public static function setEvent($event)
     {
-        Coroutine::getContext()['event'] = $event;
+        Singleton::getInstance()->set('event',$event);
     }
 
     /**
@@ -70,13 +70,14 @@ trait ModelEvent
         }
 
         $call = 'on' . Str::studly($event);
+        $CoroutineEvent = Singleton::getInstance()->get('event');
 
         try {
             if (method_exists(static::class, $call)) {
                 $result = call_user_func([static::class, $call], $this);
-            } elseif (isset(Coroutine::getContext()['event']) && is_object(Coroutine::getContext()['event'])
-                && method_exists(Coroutine::getContext()['event'], 'trigger')) {
-                $result = Coroutine::getContext()['event']->trigger(static::class . '.' . $event, $this);
+            } elseif (isset($CoroutineEvent) && is_object($CoroutineEvent)
+                && method_exists($CoroutineEvent, 'trigger')) {
+                $result = $CoroutineEvent->trigger(static::class . '.' . $event, $this);
                 $result = empty($result) ? true : end($result);
             } else {
                 $result = true;

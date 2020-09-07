@@ -15,7 +15,7 @@ namespace rayswoole\orm;
 use ArrayAccess;
 use Closure;
 use JsonSerializable;
-use Swoole\Coroutine;
+use rayswoole\orm\facade\Singleton;
 use think\contract\Arrayable;
 use think\contract\Jsonable;
 use rayswoole\orm\db\BaseQuery as Query;
@@ -154,7 +154,7 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
      */
     public static function maker(Closure $maker)
     {
-        Coroutine::getContext()['maker'][] = $maker;
+        Singleton::getInstance()->setMaker($maker);
     }
 
     /**
@@ -166,10 +166,9 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
      */
     public static function macro(string $method, Closure $closure)
     {
-        if (!isset(Coroutine::getContext()['macro']) || !isset(Coroutine::getContext()['macro'][static::class])) {
-            Coroutine::getContext()['macro'][static::class] = [];
+        if (!Singleton::getInstance()->getMacro(static::class, $method)){
+            Singleton::getInstance()->setMacro(static::class, $method, $closure);
         }
-        Coroutine::getContext()['macro'][static::class][$method] = $closure;
     }
 
     /**
@@ -191,7 +190,7 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
      */
     public static function setInvoker(callable $callable): void
     {
-        Coroutine::getContext()['invoker'] = $callable;
+        Singleton::getInstance()->set('invoker', $callable);
     }
 
     /**
@@ -203,11 +202,9 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
      */
     public function invoke($method, array $vars = [])
     {
-        if (!empty(Coroutine::getContext()['invoker'])) {
-            $call = Coroutine::getContext()['invoker'];
+        if ($call = Singleton::getInstance()->get('invoker')){
             return $call($method instanceof Closure ? $method : Closure::fromCallable([$this, $method]), $vars);
         }
-
         return call_user_func_array($method instanceof Closure ? $method : [$this, $method], $vars);
     }
 
@@ -238,8 +235,8 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
             $this->name = basename($name);
         }
 
-        if (!empty(Coroutine::getContext()['maker'])) {
-            foreach (Coroutine::getContext()['maker'] as $maker) {
+        if (!empty(Singleton::getInstance()->getMaker())) {
+            foreach (Singleton::getInstance()->getMaker() as $maker) {
                 call_user_func($maker, $this);
             }
         }
@@ -388,8 +385,10 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
      */
     private function initialize(): void
     {
-        if (isset(Coroutine::getContext()['initialized']) && !isset(Coroutine::getContext()['initialized'][static::class])) {
-            Coroutine::getContext()['initialized'][static::class] = true;
+        $initialized = Singleton::getInstance()->get('initialized');
+        if (!$initialized || !isset($initialized[static::class])){
+            $initialized[static::class] = true;
+            Singleton::getInstance()->set('initialized', $initialized);
             static::init();
         }
     }
@@ -1026,8 +1025,9 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
 
     public function __call($method, $args)
     {
-        if (isset(Coroutine::getContext()['macro'][static::class][$method])) {
-            return call_user_func_array(Coroutine::getContext()['macro'][static::class][$method]->bindTo($this, static::class), $args);
+        $macro = Singleton::getInstance()->getMacro(static::class, $method);
+        if (isset($macro)) {
+            return call_user_func_array($macro->bindTo($this, static::class), $args);
         }
 
         if ('withattr' == strtolower($method)) {
@@ -1039,8 +1039,9 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
 
     public static function __callStatic($method, $args)
     {
-        if (isset(Coroutine::getContext()['macro'][static::class][$method])) {
-            return call_user_func_array(Coroutine::getContext()['macro'][static::class][$method]->bindTo(null, static::class), $args);
+        $macro = Singleton::getInstance()->getMacro(static::class, $method);
+        if (isset($macro)) {
+            return call_user_func_array($macro->bindTo(null, static::class), $args);
         }
 
         $model = new static();

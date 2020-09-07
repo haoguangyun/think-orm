@@ -17,9 +17,9 @@ use ArrayIterator;
 use Closure;
 use Countable;
 use DomainException;
+use EasySwoole\Component\Singleton;
 use IteratorAggregate;
 use JsonSerializable;
-use Swoole\Coroutine;
 use rayswoole\orm\paginator\driver\Bootstrap;
 use Traversable;
 
@@ -137,8 +137,9 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
      */
     public static function make($items, int $listRows, int $currentPage = 1, int $total = null, bool $simple = false, array $options = [])
     {
-        if (isset(Coroutine::getContext()['PaginatorMaker'])) {
-            return call_user_func(Coroutine::getContext()['PaginatorMaker'], $items, $listRows, $currentPage, $total, $simple, $options);
+        $PaginatorMaker = Singleton::getInstance()->get('PaginatorMaker');
+        if (isset($PaginatorMaker)) {
+            return call_user_func($PaginatorMaker, $items, $listRows, $currentPage, $total, $simple, $options);
         }
 
         return new Bootstrap($items, $listRows, $currentPage, $total, $simple, $options);
@@ -146,7 +147,7 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
 
     public static function maker(Closure $resolver)
     {
-        Coroutine::getContext()['PaginatorMaker'] = $resolver;
+        Singleton::getInstance()->set('PaginatorMaker', $resolver);
     }
 
     protected function setCurrentPage(int $currentPage): int
@@ -200,8 +201,9 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
      */
     public static function getCurrentPage(string $varPage = 'page', int $default = 1): int
     {
-        if (isset(Coroutine::getContext()['currentPageResolver'])) {
-            return call_user_func(Coroutine::getContext()['currentPageResolver'], $varPage);
+        $currentPageResolver = Singleton::getInstance()->get('currentPageResolver');
+        if (isset($currentPageResolver)) {
+            return call_user_func($currentPageResolver, $varPage);
         }
 
         return $default;
@@ -213,7 +215,7 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
      */
     public static function currentPageResolver(Closure $resolver)
     {
-        Coroutine::getContext()['currentPageResolver'] = $resolver;
+        Singleton::getInstance()->set('currentPageResolver', $resolver);
     }
 
     /**
@@ -224,8 +226,9 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
      */
     public static function getCurrentPath($default = '/'): string
     {
-        if (isset(Coroutine::getContext()['currentPathResolver'])) {
-            return call_user_func(Coroutine::getContext()['currentPathResolver']);
+        $currentPathResolver = Singleton::getInstance()->get('currentPathResolver');
+        if (isset($currentPathResolver)) {
+            return call_user_func($currentPathResolver);
         }
 
         return $default;
@@ -237,7 +240,7 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
      */
     public static function currentPathResolver(Closure $resolver)
     {
-        Coroutine::getContext()['currentPathResolver'] = $resolver;
+        Singleton::getInstance()->set('currentPathResolver', $resolver);
     }
 
     /**

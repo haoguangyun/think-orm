@@ -13,7 +13,7 @@ declare (strict_types = 1);
 namespace rayswoole\orm\model\concern;
 
 use Closure;
-use Swoole\Coroutine;
+use rayswoole\orm\facade\Singleton;
 use think\Collection;
 use rayswoole\orm\db\BaseQuery as Query;
 use rayswoole\orm\db\exception\DbException as Exception;
@@ -723,7 +723,7 @@ trait RelationShip
 
         if (
             (method_exists($this, $relation) && !method_exists('think\Model', $relation)) ||
-            (isset(Coroutine::getContext()['macro']) && isset(Coroutine::getContext()['macro'][static::class][$relation]))
+            Singleton::getInstance()->getMacro(static::class, $relation)
         ) {
             return $relation;
         }
