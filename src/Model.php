@@ -16,6 +16,7 @@ use ArrayAccess;
 use Closure;
 use JsonSerializable;
 use rayswoole\orm\facade\Singleton;
+use think\Collection;
 use think\contract\Arrayable;
 use think\contract\Jsonable;
 use rayswoole\orm\db\BaseQuery as Query;

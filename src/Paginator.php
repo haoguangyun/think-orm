@@ -17,10 +17,11 @@ use ArrayIterator;
 use Closure;
 use Countable;
 use DomainException;
-use EasySwoole\Component\Singleton;
+use rayswoole\orm\facade\Singleton;
 use IteratorAggregate;
 use JsonSerializable;
 use rayswoole\orm\paginator\driver\Bootstrap;
+use think\Collection;
 use Traversable;
 
 /**
