@@ -265,6 +265,8 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
      */
     public function newInstance(array $data = [], $where = null): Model
     {
+        $this->readDataType($data);
+        
         $model = new static($data);
 
         if ($this->connection) {
@@ -608,6 +610,8 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
             }
 
             return true;
+        } else {
+            $this->writeDataType($data);
         }
 
         if ($this->autoWriteTimestamp && $this->updateTime && !isset($data[$this->updateTime])) {
@@ -683,6 +687,7 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
         }
 
         $this->checkData();
+        $this->writeDataType($this->data);
 
         // 检查允许字段
         $allowFields = $this->checkAllowFields();

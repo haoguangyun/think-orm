@@ -100,26 +100,6 @@ abstract class Relation
     }
 
     /**
-     * 获取关联表外键
-     * @access public
-     * @return string
-     */
-    public function getForeignKey()
-    {
-        return $this->foreignKey;
-    }
-
-    /**
-     * 获取关联表主键
-     * @access public
-     * @return string
-     */
-    public function getLocalKey()
-    {
-        return $this->localKey;
-    }
-
-    /**
      * 获取当前的关联模型类的实例
      * @access public
      * @return Model
