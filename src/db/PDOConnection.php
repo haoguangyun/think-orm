@@ -573,6 +573,7 @@ abstract class PDOConnection extends Connection
     public function free(): void
     {
         $this->PDOStatement = null;
+        DbPool::getInstance()->unDefer();
     }
 
     /**

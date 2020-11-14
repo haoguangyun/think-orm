@@ -272,6 +272,18 @@ class DbPoolManager
     }
 
     /**
+     * 释放连接对象
+     */
+    public function unDefer()
+    {
+        $cid = Coroutine::getCid();
+        if (isset($this->context[$cid])) {
+            $this->unset($this->context[$cid]);
+            unset($this->context[$cid]);
+        }
+    }
+
+    /**
      * 销毁连接池
      * @throws \Exception
      */
