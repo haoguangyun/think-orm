@@ -257,6 +257,10 @@ class DbPoolManager
             return $this->context[$cid];
         }
         $this->dbConfig = $dbConfig;
+        if ($cid <= 0){
+            $this->context[$cid] = $this->getObj();
+            return $this->context[$cid];
+        }
         if ($obj = $this->pop($this->conf->getTimeout())) {
             $this->context[$cid] = $obj;
             Coroutine::defer(function () use ($cid) {
@@ -278,6 +282,7 @@ class DbPoolManager
     {
         $cid = Coroutine::getCid();
         if (isset($this->context[$cid])) {
+            var_dump('执行到了这里');
             $this->unset($this->context[$cid]);
             unset($this->context[$cid]);
         }

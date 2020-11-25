@@ -18,7 +18,7 @@ class Singleton
 {
     private static $instance = [];
     private $container = array();
-    private $connect;
+    private $connect = [];
     private $dbLog = [];
     private $event = [];
     private $queryTimes = 0;
@@ -33,7 +33,7 @@ class Singleton
     static function getInstance()
     {
         $cid = Coroutine::getCid();
-        if(!isset(self::$instance[$cid])){
+        if(!isset(static::$instance[$cid])){
             self::$instance[$cid] = new static();
             if($cid > 0){
                 Coroutine::defer(function ()use($cid){
@@ -44,12 +44,24 @@ class Singleton
         return self::$instance[$cid];
     }
 
-    public function connect($connect = null)
+    public function connect($name = 'default', $connect = null)
     {
         if (!is_null($connect)){
-            $this->connect = $connect;
+            $this->connect[$name] = $connect;
         }
-        return $this->connect;
+        return $this->connect[$name] ?? null;
+    }
+    
+    public function reConnect($name = 'default'):void
+    {
+        if ($name !== ''){
+            $this->connect[$name] = null;
+        } else {
+            foreach ($this->connect as $k=>$connect){
+                $this->connect[$k] = null;
+            }
+            $this->connect = [];
+        }
     }
 
     public function setDbLog($key, $value):void

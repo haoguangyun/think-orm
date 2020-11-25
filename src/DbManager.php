@@ -244,11 +244,10 @@ class DbManager
         if (empty($name)) {
             $name = $this->getConfig('default', 'mysql');
         }
-
-        if ($force || !Singleton::getInstance()->connect()){
-            Singleton::getInstance()->connect($this->createConnection($name));
+        if ($force || !Singleton::getInstance()->connect($name)){
+            Singleton::getInstance()->connect($name, $this->createConnection($name));
         }
-        return Singleton::getInstance()->connect();
+        return Singleton::getInstance()->connect($name);
     }
 
     /**
@@ -390,6 +389,8 @@ class DbManager
         $this->dbLog = [];
         $this->event = [];
         $this->queryTimes = 0;
+        Singleton::getInstance()->reConnect('');
+        $this->connect()->free();
     }
 
     public function __call($method, $args)
