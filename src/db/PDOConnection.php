@@ -15,6 +15,7 @@ namespace rayswoole\orm\db;
 use Closure;
 use PDO;
 use PDOStatement;
+use Swoole\Coroutine;
 use rayswoole\orm\db\exception\BindParamException;
 use rayswoole\orm\db\exception\DbException;
 use rayswoole\orm\db\exception\PDOException;
@@ -521,10 +522,11 @@ abstract class PDOConnection extends Connection
             }
 
             $startTime = microtime(true);
-
-            //$this->links[$linkNum] = $this->createPdo($config['dsn'], $config['username'], $config['password'], $params);
-            $config['params'] = $params;
-            $this->links[$linkNum] = DbPool::getInstance($linkNum)->defer($config);
+            if (Coroutine::getCid() <= 0){
+                $this->links[$linkNum] = $this->createPdo($config['dsn'], $config['username'], $config['password'], $params);
+            } else {
+                $this->links[$linkNum] = DbPool::getInstance($linkNum)->defer($config);
+            }
 
             // SQL监控
             if (!empty($config['trigger_sql'])) {

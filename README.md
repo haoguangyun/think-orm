@@ -58,6 +58,9 @@ Db::table('think_user')->where('id', 1)->find();
 // 如果设置了数据表前缀（prefix）参数的话 也可以使用
 Db::name('user')->where('id', 1)->find();
 
+//非协程环境释放连接（协程环境内会自动释放）
+//如果非协程环境执行后会立刻进入协程环境，必须主动调用
+Db::close();
 
 // 模型写法
 use rayswoole\orm

@@ -391,6 +391,12 @@ class DbManager
         $this->queryTimes = 0;
     }
 
+    public function close()
+    {
+        $this->reset();
+        $this->connect()->close();
+    }
+
     public function __call($method, $args)
     {
         return call_user_func_array([$this->connect(), $method], $args);
