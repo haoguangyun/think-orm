@@ -51,18 +51,6 @@ class Singleton
         }
         return $this->connect[$name] ?? null;
     }
-    
-    public function reConnect($name = 'default'):void
-    {
-        if ($name !== ''){
-            $this->connect[$name] = null;
-        } else {
-            foreach ($this->connect as $k=>$connect){
-                $this->connect[$k] = null;
-            }
-            $this->connect = [];
-        }
-    }
 
     public function setDbLog($key, $value):void
     {

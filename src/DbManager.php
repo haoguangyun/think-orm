@@ -389,8 +389,6 @@ class DbManager
         $this->dbLog = [];
         $this->event = [];
         $this->queryTimes = 0;
-        Singleton::getInstance()->reConnect('');
-        $this->connect()->free();
     }
 
     public function __call($method, $args)
