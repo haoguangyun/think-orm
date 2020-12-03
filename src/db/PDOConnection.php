@@ -525,6 +525,7 @@ abstract class PDOConnection extends Connection
             if (Coroutine::getCid() <= 0){
                 $this->links[$linkNum] = $this->createPdo($config['dsn'], $config['username'], $config['password'], $params);
             } else {
+                $config['params'] = $params;
                 $this->links[$linkNum] = DbPool::getInstance($linkNum)->defer($config);
             }
 

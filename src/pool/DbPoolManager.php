@@ -49,7 +49,11 @@ class DbPoolManager
     public function getObj()
     {
         $dbConfig = $this->dbConfig;
-        return new \PDO($dbConfig['dsn'], $dbConfig['username'], $dbConfig['password'], $dbConfig['params']);
+        try {
+            return new \PDO($dbConfig['dsn'], $dbConfig['username'], $dbConfig['password'], $dbConfig['params']);
+        } catch (\PDOException $e){
+            return null;
+        }
     }
 
     /**
@@ -59,19 +63,13 @@ class DbPoolManager
      */
     private function create(int $tryTimes = 10): bool
     {
-        if ($this->destroy) {
-            return false;
-        }
-        $this->init();
-        if ($this->createdNum > $this->conf->getMax()) {
+        if ($this->destroy || $this->createdNum > $this->conf->getMax()) {
             return false;
         }
         $this->createdNum++;
         $obj = $this->getObj();
         if (is_object($obj)) {
             static::$counter++;
-            $hash = '_'.static::$counter.'_'.$this->createdNum;
-            $obj->_hash = $hash;
             $obj->_free = true;
             $obj->_lastTime = time();
             if($this->poolChannel->push($obj)){
@@ -112,7 +110,7 @@ class DbPoolManager
 
     /**
      * 将消费过的连接池对象入栈到连接池
-     * @param $obj \Pdo
+     * @param $obj \PDO
      * @return bool
      * @throws \Exception
      */
@@ -127,12 +125,6 @@ class DbPoolManager
         if (!isset($obj->_free) || $obj->_free === true){
             return true;
         }
-        //如果是当前协程创建的连接对象, 一并回收协程上下文
-        //无法通过外部执行当前方法, 该删除由defer操作
-        /*$cid = Coroutine::getCid();
-        if (isset($this->context[$cid]) && $this->context[$cid]->_hash == $obj->_hash) {
-            unset($this->context[$cid]);
-        }*/
         $obj->_lastTime = time();
         $obj->_free = true;
         if($this->poolChannel->push($obj)){
@@ -161,31 +153,26 @@ class DbPoolManager
      * @return bool 是否执行了回收
      * @throws \Exception
      */
-    private function checkFree()
+    private function checkFree():void
     {
         //进程池未初始化、进程池为空、进程池满 时均不处理
         if (!isset($this->poolChannel) || $this->poolChannel->isEmpty() || $this->poolChannel->isFull()){
-            return false;
+            return ;
         }
         $idleTime = $this->conf->getIdleTime();
-        $min = $this->conf->getMin();
         $size = $this->poolChannel->length();
         $time = time();
-        if ($size > $min){
-            while ($size > $min) {
-                $size--;
-                if(!$obj = $this->poolChannel->pop(0.01)){
-                    continue;
-                }
-                if ($time - $obj->_lastTime > $idleTime || !$this->checkPing($obj)) {
-                    $this->unset($obj);
-                } else {
-                    $this->push($obj);
-                }
+        //先将所有空闲超过idleTime的全部回收
+        while ($size > 0){
+            $size--;
+            if(!$obj = $this->poolChannel->pop(0.01)){
+                continue;
             }
-            return true;
-        } else {
-            return false;
+            if ($time - $obj->_lastTime > $idleTime || !$this->checkPing($obj)) {
+                $this->unset($obj);
+            } else {
+                $this->poolChannel->push($obj);
+            }
         }
     }
 
@@ -197,15 +184,18 @@ class DbPoolManager
     protected function checkPing($obj):bool
     {
         if( time() - $obj->_lastTime > $this->conf->getPing() ){
-            $return = false;
             try{
                 $obj->_lastTime = time();
-                $ping = $obj->exec('select 1');
-                $return = !empty($ping);//兼容TRUE 以及 +Pong 两种返回状态
-            }catch (\PdoException $redisException){
+                $result = $obj->query('select 1');
+            }catch (\Exception | \PDOException $e){
                 //防止错误输出
             }finally{
-                return $return;
+                if ($obj->errorCode() === '00000'){
+                    $result->closeCursor();
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }else{
             return true;
@@ -217,20 +207,30 @@ class DbPoolManager
      * @return int 是否执行了增加连接操作
      * @throws \Throwable
      */
-    public function checkMin(): int
+    public function checkMin(): void
     {
         $this->init();
         $min = $this->conf->getMin();
-        $length = $this->poolChannel->length();
-        if ($length < $min && $this->createdNum < $this->conf->getMax()) {
-            $left = $min - $length;
+        $free = $this->conf->getFree();
+        //如果创建的obj数量少于最小连接
+        if ($this->createdNum < $min){
+            $left = $min - $this->createdNum;
             while ($left > 0) {
                 $this->create();
                 $left--;
             }
-            return true;
         }
-        return false;
+        //当空闲数量小于要求时
+        if ($this->createdNum < $this->conf->getMax()){
+            $length = $this->poolChannel->length();
+            if ($length < $free){
+                $left = $free - $length;
+                while ($left > 0) {
+                    $this->create();
+                    $left--;
+                }
+            }
+        }
     }
 
     /**
@@ -239,9 +239,8 @@ class DbPoolManager
      */
     public function intervalCheck()
     {
-        if (!$this->checkMin()){
-            $this->checkFree();
-        }
+        $this->checkFree();
+        $this->checkMin();
     }
 
 
