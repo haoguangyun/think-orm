@@ -37,11 +37,12 @@ class Db {
             self::$instance = new DbManager();
             $conf = $config->getExtraConf();
             self::$instance->setConfig($conf);
-            if ($conf['connections'][$conf['default']]['debug']) {
-                self::$instance->setLog(\rayswoole\Logger::getInstance());
-            } else {
-                self::$instance->setCache(\rayswoole\Cache::getInstance());
-            }
+            // 此两个类不存在
+            //if ($conf['connections'][$conf['default']]['debug']) {
+            //    self::$instance->setLog(\rayswoole\Logger::getInstance());
+            //} else {
+            //    self::$instance->setCache(\rayswoole\Cache::getInstance());
+            //}
         }
         return self::$instance;
     }
