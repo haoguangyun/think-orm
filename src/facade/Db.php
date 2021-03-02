@@ -11,7 +11,6 @@
 
 namespace rayswoole\orm\facade;
 
-use rayswoole\Logger;
 use rayswoole\orm\DbManager;
 use rayswoole\orm\pool\DbPool;
 use rayswoole\orm\pool\DbPoolConfig;
@@ -20,30 +19,25 @@ use rayswoole\orm\pool\DbPoolConfig;
  * class Db
  * @package rayswoole
  * @mixin \rayswoole\orm\DbManager
- * @mixin \rayswoole\orm\BaseQuery
- * @mixin \rayswoole\orm\Query
+ * @mixin \rayswoole\orm\db\BaseQuery
+ * @mixin \rayswoole\orm\db\Query
  */
 class Db {
     /**
      * 始终创建新的对象实例
      * @var DbManager
      */
-    public static $instance;
+    public static $dbManager;
 
     public static function init(DbPoolConfig $config = null)
     {
-        if (!self::$instance && is_object($config)) {
+        if (!self::$dbManager && is_object($config)) {
             DbPool::setPoolConfig($config);
-            self::$instance = new DbManager();
+            self::$dbManager = new DbManager();
             $conf = $config->getExtraConf();
-            self::$instance->setConfig($conf);
-            if ($conf['connections'][$conf['default']]['debug']) {
-                self::$instance->setLog(\rayswoole\Logger::getInstance());
-            } else {
-                self::$instance->setCache(\rayswoole\Cache::getInstance());
-            }
+            self::$dbManager->setConfig($conf);
         }
-        return self::$instance;
+        return self::$dbManager;
     }
 
     /**
@@ -51,7 +45,7 @@ class Db {
      */
     static function getInstance()
     {
-        return self::$instance;
+        return self::$dbManager;
     }
 
     /**
@@ -61,7 +55,7 @@ class Db {
      */
     public static function __callStatic($method, $params)
     {
-        return call_user_func_array([static::$instance, $method], $params);
+        return call_user_func_array([self::$dbManager, $method], $params);
     }
 }
 

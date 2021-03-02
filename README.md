@@ -44,10 +44,18 @@ $dbConfig->withIntervalTime(15*1000)
 $dbConfig->withIdleTime(10)
 //获取连接池对象超时时间, 如果连接池占满在指定时间无法释放新的连接, 将输出Exception, 需要自行捕获
 $dbConfig->withTimeout(3.0)
+
 //数据库配置, 参考https://www.kancloud.cn/manual/think-orm/1257999
 $dbConfig->withExtraConf('数据库数组结构')
+
 //初始化连接池
 \rayswoole\orm\facade\Db::init($dbConfig);
+
+//可设置项
+//设置log日志，必须继承Psr\Log\LoggerInterface接口(orm自带)
+Db::setLog($Logger);
+//设置缓存，用于ORM连贯操作`$Db->cache()`，必须继承Psr\SimpleCache\CacheInterface接口
+Db::setCache($Cache);
 ```
 
 ### 使用
@@ -58,8 +66,7 @@ Db::table('think_user')->where('id', 1)->find();
 // 如果设置了数据表前缀（prefix）参数的话 也可以使用
 Db::name('user')->where('id', 1)->find();
 
-//非协程环境释放连接（协程环境内会自动释放）
-//如果非协程环境执行后会立刻进入协程环境，必须主动调用
+//注意: 非协程环境使用必须主动释放连接（协程环境内会自动释放）
 Db::close();
 
 // 模型写法
